@@ -1,3 +1,8 @@
 {
-  "extends": "@tsconfig/react-native/tsconfig.json"
+  "compilerOptions": {
+    "target": "es6",
+    "lib": ["es2021", "dom"],
+    "jsx": "react-native"
+  },
+  "extends": ["@tsconfig/react-native/tsconfig.json"]
 }
