@@ -4,13 +4,15 @@ import {View, Text, Pressable, Linking} from 'react-native';
 import {NativeStackScreenProps} from '@react-navigation/native-stack';
 
 import styles from './AccountPageStyles';
+import AlertExceptionHelper, {
+  AsyncAlertExceptionHelper,
+} from '../../utils/AlertExceptionHelper';
 import AppWrapper from '../../components/AppWrapper/AppWrapper';
-import isNoInternet from '../../utils/FetchBackend/isNoInternet';
 import FetchUsers from '../../utils/FetchBackend/rest/api/users';
 import RootStackParamList from '../../navigation/RootStackParamList';
 import FetchSessions from '../../utils/FetchBackend/rest/api/sessions';
 import MyLocalStorage from '../../utils/MyLocalStorage/MyLocalStorage';
-import UnauthorizedException from '../../utils/FetchBackend/exceptions/UnauthorizedException';
+import HttpException from '../../utils/FetchBackend/exceptions/HttpException';
 
 type IProps = NativeStackScreenProps<RootStackParamList, 'AccountPage'>;
 
@@ -32,7 +34,6 @@ function AccountPage(props: IProps): JSX.Element {
 
     (async function () {
       const accessToken = await MyLocalStorage.getItem('access');
-
       if (accessToken === null || accessToken === '') {
         setIsLogin(false);
         return;
@@ -42,11 +43,12 @@ function AccountPage(props: IProps): JSX.Element {
         setAccountDate(await FetchUsers.findOne());
         setIsLogin(true);
       } catch (exception) {
-        if (exception instanceof UnauthorizedException) {
+        await AsyncAlertExceptionHelper(exception);
+        if (
+          exception instanceof HttpException &&
+          exception.HTTP_STATUS === 401
+        ) {
           setIsLogin(false);
-        }
-        if (isNoInternet(exception)) {
-          return;
         }
       }
     })();
@@ -69,18 +71,22 @@ function AccountPage(props: IProps): JSX.Element {
   }
 
   async function logout() {
-    await FetchSessions.logout();
-    setIsLogin(false);
-    await MyLocalStorage.removeItem('access');
-    await MyLocalStorage.removeItem('refresh');
+    try {
+      await FetchSessions.logout();
+      setIsLogin(false);
+      await MyLocalStorage.removeItem('access');
+      await MyLocalStorage.removeItem('refresh');
+    } catch (exception) {
+      await AsyncAlertExceptionHelper(exception);
+    }
   }
 
   async function openWebsite() {
     try {
       const url = 'https://de-pa.by';
       await Linking.openURL(url);
-    } catch (err) {
-      //err
+    } catch (exception) {
+      AlertExceptionHelper(exception);
     }
   }
 

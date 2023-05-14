@@ -1,38 +1,14 @@
 import AsyncStorage from '@react-native-async-storage/async-storage';
 
-interface Dictionary<T> {
-  [Key: string]: T;
-}
+import {AsyncAlertExceptionHelper} from '../AlertExceptionHelper';
 
 class MyLocalStorage {
-  static async getAll() {
-    let keys: any = [];
-
-    try {
-      keys = await AsyncStorage.getAllKeys();
-
-      let dict: Dictionary<string | null> = {};
-      let count = 0;
-      for (let i = 0; i < keys.length; ++i) {
-        const key: string = keys[i];
-        const value: string | null = await MyLocalStorage.getItem(key);
-        dict[key] = value;
-        count += 1;
-      }
-
-      dict['length'] = `${count}`;
-
-      return dict;
-    } catch (err) {
-      return {};
-    }
-  }
-
   static async getItem(key: string): Promise<string | null> {
     try {
       const item = await AsyncStorage.getItem(key);
       return item;
-    } catch (err) {
+    } catch (exception) {
+      await AsyncAlertExceptionHelper(exception);
       return 'err';
     }
   }
@@ -40,16 +16,16 @@ class MyLocalStorage {
   static async setItem(key: string, value: string) {
     try {
       await AsyncStorage.setItem(key, value);
-    } catch (err) {
-      // save error
+    } catch (exception) {
+      await AsyncAlertExceptionHelper(exception);
     }
   }
 
   static async removeItem(key: string) {
     try {
       await AsyncStorage.removeItem(key);
-    } catch (err) {
-      // remove error
+    } catch (exception) {
+      await AsyncAlertExceptionHelper(exception);
     }
   }
 }

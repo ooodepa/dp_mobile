@@ -3,13 +3,15 @@ import {View, Text, Pressable, RefreshControl} from 'react-native';
 import {NativeStackScreenProps} from '@react-navigation/native-stack';
 
 import styles from './SessionsPageStyles';
-import RootStackParamList from '../../navigation/RootStackParamList';
 import AppWrapper from '../../components/AppWrapper/AppWrapper';
 import isNoInternet from '../../utils/FetchBackend/isNoInternet';
+import RootStackParamList from '../../navigation/RootStackParamList';
 import DataController from '../../utils/DateConroller/DateController';
 import FetchSessions from '../../utils/FetchBackend/rest/api/sessions';
 import MyLocalStorage from '../../utils/MyLocalStorage/MyLocalStorage';
+import {AsyncAlertExceptionHelper} from '../../utils/AlertExceptionHelper';
 import UnauthorizedException from '../../utils/FetchBackend/exceptions/UnauthorizedException';
+import HttpException from '../../utils/FetchBackend/exceptions/HttpException';
 
 type IProps = NativeStackScreenProps<RootStackParamList, 'SessionsPage'>;
 
@@ -43,17 +45,14 @@ function SessionsPage(props: IProps): JSX.Element {
       setIsRefreshing(false);
       setIsLogin(true);
     } catch (exception) {
-      setIsRefreshing(false);
-      if (exception instanceof UnauthorizedException) {
-        setSessions([]);
+      await AsyncAlertExceptionHelper(exception);
+      if (exception instanceof HttpException && exception.HTTP_STATUS === 401) {
         setIsLogin(false);
+        setSessions([]);
         props.navigation.navigate('AccountPage');
       }
-      if (isNoInternet(exception)) {
-        setIsRefreshing(false);
-        return;
-      }
     }
+    setIsRefreshing(false);
   }
 
   async function remove(id: number) {
@@ -61,14 +60,7 @@ function SessionsPage(props: IProps): JSX.Element {
       await FetchSessions.remove(id);
       await onRefresh();
     } catch (exception) {
-      if (exception instanceof UnauthorizedException) {
-        setIsLogin(false);
-        setSessions([]);
-        props.navigation.navigate('AccountPage');
-      }
-      if (isNoInternet(exception)) {
-        return;
-      }
+      await AsyncAlertExceptionHelper(exception);
     }
   }
 
@@ -81,6 +73,8 @@ function SessionsPage(props: IProps): JSX.Element {
       setSessions([]);
       props.navigation.navigate('AccountPage');
     } catch (exception) {
+      await AsyncAlertExceptionHelper(exception);
+
       if (exception instanceof UnauthorizedException) {
         setIsLogin(false);
         setSessions([]);

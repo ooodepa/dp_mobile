@@ -11,6 +11,7 @@ import isNoInternet from '../../utils/FetchBackend/isNoInternet';
 import FetchItems from '../../utils/FetchBackend/rest/api/items';
 import RootStackParamList from '../../navigation/RootStackParamList';
 import MyLocalStorage from '../../utils/MyLocalStorage/MyLocalStorage';
+import {AsyncAlertExceptionHelper} from '../../utils/AlertExceptionHelper';
 import PostImageBlock from '../../components/PostImageBlock/PostImageBlock';
 import LikeUnlikeItemDto from '../../utils/LikeController/dto/LikeUnlikeItemDto';
 import FetchFavoriteItems from '../../utils/FetchBackend/rest/api/favorite-items';
@@ -47,9 +48,9 @@ export default function FavoritePage(props: Props) {
   }, [isFocused]);
 
   async function onRefresh() {
-    setIsRefreshing(true);
-
     try {
+      setIsRefreshing(true);
+
       const refreshToken = await MyLocalStorage.getItem('refresh');
       if (!refreshToken) {
         setIsRefreshing(false);
@@ -64,6 +65,7 @@ export default function FavoritePage(props: Props) {
       setLikeUnlikeItems(itms);
       setIsRefreshing(false);
     } catch (exception) {
+      await AsyncAlertExceptionHelper(exception);
       if (exception instanceof UnauthorizedException) {
         MyLocalStorage.removeItem('access');
         MyLocalStorage.removeItem('refresh');
@@ -101,6 +103,8 @@ export default function FavoritePage(props: Props) {
         }),
       );
     } catch (exception) {
+      await AsyncAlertExceptionHelper(exception);
+
       if (exception instanceof UnauthorizedException) {
         MyLocalStorage.removeItem('access');
         MyLocalStorage.removeItem('refresh');
@@ -132,6 +136,8 @@ export default function FavoritePage(props: Props) {
         }),
       );
     } catch (exception) {
+      await AsyncAlertExceptionHelper(exception);
+
       if (exception instanceof UnauthorizedException) {
         MyLocalStorage.removeItem('access');
         MyLocalStorage.removeItem('refresh');
@@ -152,6 +158,9 @@ export default function FavoritePage(props: Props) {
         <RefreshControl refreshing={isRefreshing} onRefresh={onRefresh} />
       }>
       <View style={styles.items}>
+        {likeUnlikeItems.length !== 0 ? null : (
+          <Text style={styles.list_empty_text}>Список избранных пуст</Text>
+        )}
         {likeUnlikeItems[0]?.dp_id === '-1'
           ? null
           : likeUnlikeItems.map((element: LikeUnlikeItemDto) => {

@@ -1,6 +1,6 @@
 import LikeUnlikeItemDto from './dto/LikeUnlikeItemDto';
-import ItemShortDto from '../FetchBackend/rest/api/items/dto/ItemShortDto';
-import FavoriteItemDto from '../FetchBackend/rest/api/favorite-items/dto/FavoriteItemDto';
+import ItemShortDto from '../FetchBackend/rest/api/items/dto/item-short.dto';
+import FavoriteItemDto from '../FetchBackend/rest/api/favorite-items/dto/favorite-item.dto';
 
 class LikeController {
   static like(likeItems: LikeUnlikeItemDto[], itemId: string) {

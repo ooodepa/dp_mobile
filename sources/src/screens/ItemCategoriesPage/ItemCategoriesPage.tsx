@@ -7,9 +7,10 @@ import styles from './ItemCategoriesPageStyles';
 import AppWrapper from '../../components/AppWrapper/AppWrapper';
 import isNoInternet from '../../utils/FetchBackend/isNoInternet';
 import RootStackParamList from '../../navigation/RootStackParamList';
+import {AsyncAlertExceptionHelper} from '../../utils/AlertExceptionHelper';
 import PostImageBlock from '../../components/PostImageBlock/PostImageBlock';
 import FetchItemCategories from '../../utils/FetchBackend/rest/api/item-categories';
-import ItemCategoryDto from '../../utils/FetchBackend/rest/api/item-categories/dto/ItemCategoryDto';
+import ItemCategoryDto from '../../utils/FetchBackend/rest/api/item-categories/dto/item-category.dto';
 
 type Props = NativeStackScreenProps<RootStackParamList, 'ItemCategoriesPage'>;
 
@@ -45,6 +46,7 @@ function ItemCategoriesPage(props: Props): JSX.Element {
       const {brand} = params;
       setCategoriesItem(await FetchItemCategories.getAll({brand}));
     } catch (exception) {
+      await AsyncAlertExceptionHelper(exception);
       if (isNoInternet(exception)) {
         setIsRefreshing(false);
         return;

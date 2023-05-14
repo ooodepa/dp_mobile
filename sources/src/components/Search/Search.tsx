@@ -1,11 +1,12 @@
 import React, {useEffect, useState} from 'react';
+import {useIsFocused} from '@react-navigation/native';
 import {View, TextInput, Text, Pressable} from 'react-native';
 import {NativeStackScreenProps} from '@react-navigation/native-stack';
 
 import styles from './SearchStyles';
 import FetchItems from '../../utils/FetchBackend/rest/api/items';
 import RootStackParamList from '../../navigation/RootStackParamList';
-import {useIsFocused} from '@react-navigation/native';
+import {AsyncAlertExceptionHelper} from '../../utils/AlertExceptionHelper';
 
 interface IProps {
   nativeStackScreenProps: NativeStackScreenProps<
@@ -53,11 +54,19 @@ function Search(props: IProps) {
   }
 
   async function onChangeSearch(srch: string) {
-    setSearch(srch);
     try {
+      setSearch(srch);
+
+      if (srch.length === 0) {
+        setShortResults([]);
+        return;
+      }
+
       const items = await FetchItems.search(srch);
       setShortResults(items);
-    } catch (exception) {}
+    } catch (exception) {
+      await AsyncAlertExceptionHelper(exception);
+    }
   }
 
   return (

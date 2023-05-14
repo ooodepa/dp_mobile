@@ -14,6 +14,7 @@ import AppWrapper from '../../components/AppWrapper/AppWrapper';
 import FetchUsers from '../../utils/FetchBackend/rest/api/users';
 import isNoInternet from '../../utils/FetchBackend/isNoInternet';
 import RootStackParamList from '../../navigation/RootStackParamList';
+import {AsyncAlertExceptionHelper} from '../../utils/AlertExceptionHelper';
 
 type IProps = NativeStackScreenProps<RootStackParamList, 'ForgetPasswordPage'>;
 
@@ -35,6 +36,8 @@ function ForgetPasswordPage(props: IProps): JSX.Element {
       message = 'Сообщение отправлено на почту';
       Alert.alert(title, message);
     } catch (exception) {
+      await AsyncAlertExceptionHelper(exception);
+
       message = 'Сообщение не отправлено';
       Alert.alert(title, message);
 

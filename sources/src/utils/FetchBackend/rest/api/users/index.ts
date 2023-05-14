@@ -1,55 +1,54 @@
 import {Alert} from 'react-native';
 
-import GetUserDto from './dto/GetUserDto';
-import CreateUserDto from './dto/CreateUserDto';
+import GetUserDto from './dto/get-user.dto';
+import CreateUserDto from './dto/create-user.dto';
 import FetchBackend from '../../../FetchBackend';
-import HttpResponseDto from '../../../HttpResponseDto';
-import ForgetPasswordDto from './dto/ForgetPasswordDto';
+import ForgetPasswordDto from './dto/forget-password.dto';
 import HttpException from '../../../exceptions/HttpException';
-import CreateUserResponseDto from './dto/CreateUserResponseDto';
+import CreateUserResponseDto from './dto/create-user-response.dto';
 
 export default class FetchUsers {
   static async forgetPassword(dto: ForgetPasswordDto) {
-    const URI = 'users/forget-password';
-
-    const response = await FetchBackend.post('none', URI, dto);
+    const result = await FetchBackend(
+      'none',
+      'POST',
+      'users/forget-password',
+      dto,
+    );
+    const response = result.response;
 
     if (response.status === 200) {
       return true;
     }
 
-    throw new HttpException('POST', response);
+    throw new HttpException(result.method, response);
   }
 
   static async create(dto: CreateUserDto) {
-    const URI = 'users';
-
-    const response = await FetchBackend.post('none', URI, dto);
+    const result = await FetchBackend('none', 'POST', 'users', dto);
+    const response = result.response;
 
     if (response.status === 201) {
       const json: CreateUserResponseDto = await response.json();
-
-      const message = 'Подтвердите вашу регистрацию по электронной почте';
-      Alert.alert('Регистрация', message);
-
+      Alert.alert(
+        'Регистрация',
+        'Подтвердите вашу регистрацию по электронной почте',
+      );
       return json;
     }
 
-    const json: HttpResponseDto = await response.json();
-    const message = ` Код: ${response.status} \n ${json.message}`;
-    Alert.alert('Регистрация', message);
-
-    throw new HttpException('POST', response);
+    throw new HttpException(result.method, response);
   }
 
   static async findOne() {
-    const response = await FetchBackend.get('access', 'users');
+    const result = await FetchBackend('access', 'GET', 'users');
+    const response = result.response;
 
     if (response.status === 200) {
       const json: GetUserDto = await response.json();
       return json;
     }
 
-    throw new HttpException('GET', response);
+    throw new HttpException(result.method, response);
   }
 }

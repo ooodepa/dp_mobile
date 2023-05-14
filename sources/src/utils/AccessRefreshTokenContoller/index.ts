@@ -3,7 +3,8 @@ import HttpAlert from '../HttpAlert';
 import ToastController from '../Toast';
 import MyLocalStorage from '../MyLocalStorage/MyLocalStorage';
 import HttpResponseDto from '../FetchBackend/HttpResponseDto';
-import UpdateSessionDto from '../FetchBackend/rest/api/sessions/dto/UpdateSessionDto';
+import {AsyncAlertExceptionHelper} from '../AlertExceptionHelper';
+import UpdateSessionDto from '../FetchBackend/rest/api/sessions/dto/update-session.dto';
 
 class AccessRefreshTokenContoller {
   static async setAccessToken(token: string) {
@@ -30,14 +31,12 @@ class AccessRefreshTokenContoller {
   static async isAccessRefreshTokensInStorage(): Promise<boolean> {
     const refreshToken = await AccessRefreshTokenContoller.getRefreshToken();
     const accessToken = await AccessRefreshTokenContoller.getAccessToken();
-    console.log(await MyLocalStorage.getAll());
     return refreshToken || accessToken ? true : false;
   }
 
   static async isAccessTokenExist(): Promise<boolean> {
     const refreshToken = await AccessRefreshTokenContoller.getRefreshToken();
     if (!refreshToken) {
-      console.log('нет refresh');
       await AccessRefreshTokenContoller.clear();
       return false;
     }
@@ -87,10 +86,12 @@ class AccessRefreshTokenContoller {
       HttpAlert.alert(title, message, status);
 
       return false;
-    } catch (err: any) {
+    } catch (exception: any) {
+      await AsyncAlertExceptionHelper(exception);
+
       const title = 'Обновление токена доступа';
-      const message = `${err}`;
-      const status = err.status;
+      const message = `${exception}`;
+      const status = exception.status;
       HttpAlert.alert(title, message, status);
 
       return false;

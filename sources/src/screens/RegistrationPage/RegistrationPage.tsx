@@ -12,6 +12,7 @@ import FetchUsers from '../../utils/FetchBackend/rest/api/users';
 import isNoInternet from '../../utils/FetchBackend/isNoInternet';
 import RootStackParamList from '../../navigation/RootStackParamList';
 import MyLocalStorage from '../../utils/MyLocalStorage/MyLocalStorage';
+import {AsyncAlertExceptionHelper} from '../../utils/AlertExceptionHelper';
 import NotFoundException from '../../utils/FetchBackend/exceptions/NotFoundException';
 
 type IProps = NativeStackScreenProps<RootStackParamList, 'RegistrationPage'>;
@@ -53,6 +54,8 @@ function RegistrationPage(props: IProps): JSX.Element {
         setAddress(data.address);
         nextStep();
       } catch (exception) {
+        await AsyncAlertExceptionHelper(exception);
+
         if (exception instanceof NotFoundException) {
           const title = 'Проверка УНП';
           const message = 'Такой УНП не найден';
@@ -126,6 +129,8 @@ function RegistrationPage(props: IProps): JSX.Element {
 
         props.navigation.navigate('AccountPage');
       } catch (exception) {
+        await AsyncAlertExceptionHelper(exception);
+
         if (isNoInternet(exception)) {
           return;
         }

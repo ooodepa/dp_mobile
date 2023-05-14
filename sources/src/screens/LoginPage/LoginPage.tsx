@@ -1,13 +1,14 @@
 import React, {useState} from 'react';
-import {NativeStackScreenProps} from '@react-navigation/native-stack';
 import {View, Text, TextInput, Pressable} from 'react-native';
+import {NativeStackScreenProps} from '@react-navigation/native-stack';
 
 import styles from './LoginPageStyles';
-import RootStackParamList from '../../navigation/RootStackParamList';
 import AppWrapper from '../../components/AppWrapper/AppWrapper';
 import isNoInternet from '../../utils/FetchBackend/isNoInternet';
+import RootStackParamList from '../../navigation/RootStackParamList';
 import MyLocalStorage from '../../utils/MyLocalStorage/MyLocalStorage';
 import FetchSessions from '../../utils/FetchBackend/rest/api/sessions';
+import {AsyncAlertExceptionHelper} from '../../utils/AlertExceptionHelper';
 
 type IProps = NativeStackScreenProps<RootStackParamList, 'LoginPage'>;
 
@@ -30,6 +31,8 @@ function LoginPage(props: IProps): JSX.Element {
 
       props.navigation.navigate('AccountPage');
     } catch (exception) {
+      await AsyncAlertExceptionHelper(exception);
+
       if (isNoInternet(exception)) {
         return;
       }

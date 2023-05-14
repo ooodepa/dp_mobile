@@ -9,8 +9,9 @@ import isNoInternet from '../../utils/FetchBackend/isNoInternet';
 import RootStackParamList from '../../navigation/RootStackParamList';
 import FetchArticles from '../../utils/FetchBackend/rest/api/articles';
 import DataController from './../../utils/DateConroller/DateController';
+import {AsyncAlertExceptionHelper} from '../../utils/AlertExceptionHelper';
 import PostImageBlock from './../../components/PostImageBlock/PostImageBlock';
-import ArticleDto from '../../utils/FetchBackend/rest/api/articles/dto/ArticleDto';
+import ArticleDto from '../../utils/FetchBackend/rest/api/articles/dto/article.dto';
 import SwipeDownToRefresh from '../../components/SwipeDownToRefresh/SwipeDownToRefresh';
 
 type Props = NativeStackScreenProps<RootStackParamList, 'ArticlesPage'>;
@@ -26,8 +27,10 @@ function ArticlesPage(props: Props): JSX.Element {
       dp_urlSegment: '',
       dp_photoUrl: '',
       dp_text: '',
+      dp_sortingIndex: 0,
       dp_seoKeywords: '',
       dp_seoDescription: '',
+      dp_isHidden: true,
       dp_articleAttachedLinks: [
         {
           dp_id: -1,
@@ -55,8 +58,13 @@ function ArticlesPage(props: Props): JSX.Element {
     setIsRefreshing(true);
 
     try {
-      setArray(await FetchArticles.getAll());
+      setArray(
+        (await FetchArticles.getAll())
+          .sort((a, b) => a.dp_date.localeCompare(b.dp_date))
+          .sort((a, b) => a.dp_sortingIndex - b.dp_sortingIndex),
+      );
     } catch (exception) {
+      await AsyncAlertExceptionHelper(exception);
       if (isNoInternet(exception)) {
         setIsRefreshing(false);
         return;
@@ -80,24 +88,24 @@ function ArticlesPage(props: Props): JSX.Element {
         {array.length === 0 || array[0]?.dp_id === '-1' ? (
           <SwipeDownToRefresh />
         ) : null}
-        {array[0]?.dp_id === '-1'
-          ? null
-          : array.map((element: ArticleDto) => {
-              const lastEdit = DataController.getTimeAgo(
-                new Date(element.dp_date),
-              );
-              return (
-                <Pressable
-                  key={element.dp_id}
-                  onPress={() => toArticlePage(element.dp_urlSegment)}>
-                  <View style={styles.item__block}>
-                    <PostImageBlock url={element.dp_photoUrl} />
-                    <Text style={styles.item__text}>{element.dp_name}</Text>
-                    <Text style={styles.item__lastEdit}>{lastEdit}</Text>
-                  </View>
-                </Pressable>
-              );
-            })}
+        {array.map((element: ArticleDto) => {
+          if (element.dp_isHidden) {
+            return null;
+          }
+
+          const lastEdit = DataController.getTimeAgo(new Date(element.dp_date));
+          return (
+            <Pressable
+              key={element.dp_id}
+              onPress={() => toArticlePage(element.dp_urlSegment)}>
+              <View style={styles.item__block}>
+                <PostImageBlock url={element.dp_photoUrl} />
+                <Text style={styles.item__text}>{element.dp_name}</Text>
+                <Text style={styles.item__lastEdit}>{lastEdit}</Text>
+              </View>
+            </Pressable>
+          );
+        })}
       </View>
     </AppWrapper>
   );

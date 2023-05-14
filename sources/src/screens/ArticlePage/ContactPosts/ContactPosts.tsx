@@ -3,8 +3,9 @@ import Icon from 'react-native-vector-icons/FontAwesome';
 import {Text, View, Linking, Pressable, Alert} from 'react-native';
 
 import styles from './ContactPostsStyles';
-import HelperDto from '../../../utils/FetchBackend/rest/api/helpers/dto/HelperDto';
-import CommunicationTypesDto from '../../../utils/FetchBackend/rest/api/contact-types/dto/ContactTypesDto';
+import AlertExceptionHelper from '../../../utils/AlertExceptionHelper';
+import HelperDto from '../../../utils/FetchBackend/rest/api/helpers/dto/helper.dto';
+import CommunicationTypesDto from '../../../utils/FetchBackend/rest/api/contact-types/dto/contact-types.dto';
 
 interface IProps {
   contacts: HelperDto[];
@@ -25,15 +26,14 @@ function ContactPosts(props: IProps) {
   async function openLink(url: string) {
     try {
       await Linking.openURL(url);
-    } catch (err) {
-      //err
+    } catch (exception) {
+      AlertExceptionHelper(exception);
     }
   }
 
   async function openViber(phone: string) {
-    const URL = `viber://add?number=${phone}`;
-
     try {
+      const URL = `viber://add?number=${phone}`;
       const isSupported = await Linking.canOpenURL(URL);
 
       if (!isSupported) {
@@ -48,8 +48,8 @@ function ContactPosts(props: IProps) {
       }
 
       await Linking.openURL(URL);
-    } catch (err) {
-      // err
+    } catch (exception) {
+      AlertExceptionHelper(exception);
     }
   }
 
@@ -59,9 +59,8 @@ function ContactPosts(props: IProps) {
   }
 
   async function openSkype(login: string) {
-    const URL = `skype:${login}?call`;
-
     try {
+      const URL = `skype:${login}?call`;
       const isSupported = await Linking.canOpenURL(URL);
 
       if (!isSupported) {
@@ -76,8 +75,8 @@ function ContactPosts(props: IProps) {
       }
 
       await Linking.openURL(URL);
-    } catch (err) {
-      // err
+    } catch (exception) {
+      AlertExceptionHelper(exception);
     }
   }
 

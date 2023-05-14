@@ -1,21 +1,24 @@
 import FetchBackend from '../../../FetchBackend';
-import ItemCategoryDto from './dto/ItemCategoryDto';
+import ItemCategoryDto from './dto/item-category.dto';
 import HttpException from '../../../exceptions/HttpException';
-import FilterItemCategoryDto from './dto/FilterItemCategoryDto';
 import ObjectToQueryString from '../../../../ObjectToQueryString';
+import FilterItemCategoryDto from './dto/filter-item-category.dto';
 
 export default class FetchItemCategories {
   static async getAll(filter: FilterItemCategoryDto = {}) {
     const QUERY = ObjectToQueryString(filter);
-    const URI = `item-categories?${QUERY}`;
-
-    const response = await FetchBackend.get('none', URI);
+    const result = await FetchBackend(
+      'none',
+      'GET',
+      `item-categories?${QUERY}`,
+    );
+    const response = result.response;
 
     if (response.status === 200) {
       const json: ItemCategoryDto[] = await response.json();
       return json;
     }
 
-    throw new HttpException('GET', response);
+    throw new HttpException(result.method, response);
   }
 }

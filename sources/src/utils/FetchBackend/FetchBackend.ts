@@ -1,115 +1,188 @@
 import env from '../../env';
-import isAccessTokenUpdated from './isAccessTokenUpdated';
 import MyLocalStorage from '../MyLocalStorage/MyLocalStorage';
-import UnauthorizedException from './exceptions/UnauthorizedException';
+import HttpException from './exceptions/HttpException';
+import UpdateSessionResponseDto from './rest/api/sessions/dto/update-session-response.dto';
 
-async function getAuthorization(
-  type: 'none' | 'access' | 'refresh',
-): Promise<any> {
-  if (type === 'access') {
-    const token = await MyLocalStorage.getItem('access');
-    return {Authorization: `Bearer ${token}`};
-  }
-
-  if (type === 'refresh') {
-    const token = await MyLocalStorage.getItem('refresh');
-    return {Authorization: `Bearer ${token}`};
-  }
-
-  return {};
+interface FetchBackendResult {
+  response: Response;
+  method: 'GET' | 'POST' | 'PUT' | 'PATCH' | 'DELETE';
 }
 
-async function isUnauthorized(response: Response) {
-  if (response.status === 401) {
-    const isUpdated = await isAccessTokenUpdated();
-    return isUpdated ? 1 : 0;
-  }
-  return -1;
-}
+async function update() {
+  const refreshToken = await MyLocalStorage.getItem('refresh');
 
-async function CustomFetch(
-  METHOD: 'GET' | 'POST' | 'PUT' | 'PATCH' | 'DELETE',
-  TYPE: 'none' | 'access' | 'refresh',
-  URI: string,
-  BODY: any,
-) {
-  const URL = `${env.REACT_NATIVE__BACKEND_URL}/api/v1/${URI}`;
-  console.log(`${METHOD} ${URL}`);
-
-  const method = METHOD;
-  const headers = {
-    'Content-Type': 'application/json',
-    ...(await getAuthorization(TYPE)),
-  };
-  const body = JSON.stringify(BODY);
-
-  const response = await fetch(URL, {
-    method,
-    headers,
-    ...(METHOD !== 'GET' ? {body} : {}),
-  });
-
-  const isUnauth = await isUnauthorized(response);
-
-  if (isUnauth === -1) {
-    return response;
+  if (!refreshToken) {
+    return false;
   }
 
-  if (isUnauth) {
-    const response2 = await fetch(URL, {
+  const method = 'PATCH';
+  const URL = `${env.REACT_NATIVE__BACKEND_URL}/api/v1/sessions`;
+  // eslint-disable-next-line no-console
+  console.log(`${method} ${URL}`);
+
+  const response = await fetch(
+    `${env.REACT_NATIVE__BACKEND_URL}/api/v1/sessions`,
+    {
       method,
-      headers,
-      ...(METHOD !== 'GET' ? {body} : {}),
+      headers: {
+        Authorization: `Bearer ${refreshToken}`,
+      },
+    },
+  );
+
+  if (response.status === 200) {
+    const json: UpdateSessionResponseDto = await response.json();
+    const accessToken = json.dp_accessToken;
+    await MyLocalStorage.removeItem('access');
+    await MyLocalStorage.setItem('access', accessToken);
+    return true;
+  }
+
+  if (response.status === 401) {
+    await MyLocalStorage.removeItem('access');
+    await MyLocalStorage.removeItem('refresh');
+    throw new HttpException('PATCH', response);
+  }
+
+  throw new HttpException('PATCH', response);
+}
+
+export default async function FetchBackend(
+  type: 'none' | 'access',
+  method: 'GET' | 'POST' | 'PUT' | 'PATCH' | 'DELETE',
+  uri: string,
+  body: any = {},
+): Promise<FetchBackendResult> {
+  const token =
+    type === 'access'
+      ? `Bearer ${await MyLocalStorage.getItem('access')}`
+      : undefined;
+
+  const URL = `${env.REACT_NATIVE__BACKEND_URL}/api/v1/${uri}`;
+  const BODY = JSON.stringify(body);
+  // eslint-disable-next-line no-console
+  console.log(`${method} ${URL} ${type === 'access' ? 'with access' : ''}`);
+
+  if (method === 'GET') {
+    const response = await fetch(URL, {
+      headers: {
+        ...(token ? {Authorization: token} : {}),
+      },
     });
 
-    if (response2.status === 401) {
-      await MyLocalStorage.removeItem('access');
-      await MyLocalStorage.removeItem('refresh');
-      throw new UnauthorizedException();
+    if (response.status === 401) {
+      await update();
+      const newToken = `Bearer ${await MyLocalStorage.getItem('access')}`;
+      const response2 = await fetch(URL, {
+        headers: {
+          Authorization: newToken,
+        },
+      });
+      return {response: response2, method};
     }
 
-    // const isUnauth2 = await isUnauthorized(response2);
-
-    // if (isUnauth2 === 1) {
-    //   throw new UnauthorizedException();
-    // }
-
-    return response2;
+    return {response, method};
   }
 
-  return response;
-}
+  if (method === 'POST') {
+    const response = await fetch(URL, {
+      method,
+      body: BODY,
+      headers: {
+        Accept: 'application/json',
+        'Content-Type': 'application/json',
+        ...(token ? {Authorization: token} : {}),
+      },
+    });
 
-export default class FetchBackend {
-  static async get(type: 'none' | 'access' | 'refresh', URI: string) {
-    return await CustomFetch('GET', type, URI, undefined);
+    if (response.status === 401) {
+      await update();
+      const newToken = `Bearer ${await MyLocalStorage.getItem('access')}`;
+      const response2 = await fetch(URL, {
+        method,
+        body: BODY,
+        headers: {
+          Authorization: newToken,
+        },
+      });
+      return {response: response2, method};
+    }
+
+    return {response, method};
   }
 
-  static async post(
-    type: 'none' | 'access' | 'refresh',
-    URI: string,
-    body: any = undefined,
-  ) {
-    return await CustomFetch('POST', type, URI, body);
+  if (method === 'PUT') {
+    const response = await fetch(URL, {
+      method,
+      body: BODY,
+      headers: {
+        Accept: 'application/json',
+        'Content-Type': 'application/json',
+        ...(token ? {Authorization: token} : {}),
+      },
+    });
+
+    if (response.status === 401) {
+      await update();
+      const newToken = `Bearer ${await MyLocalStorage.getItem('access')}`;
+      const response2 = await fetch(URL, {
+        method,
+        body: BODY,
+        headers: {
+          Authorization: newToken,
+        },
+      });
+      return {response: response2, method};
+    }
+
+    return {response, method};
   }
 
-  static async patch(
-    type: 'none' | 'access' | 'refresh',
-    URI: string,
-    body: any,
-  ) {
-    return await CustomFetch('PATCH', type, URI, body);
+  if (method === 'PATCH') {
+    const response = await fetch(URL, {
+      method,
+      body: BODY,
+      headers: {
+        Accept: 'application/json',
+        'Content-Type': 'application/json',
+        ...(token ? {Authorization: token} : {}),
+      },
+    });
+
+    if (response.status === 401) {
+      await update();
+      const newToken = `Bearer ${await MyLocalStorage.getItem('access')}`;
+      const response2 = await fetch(URL, {
+        method,
+        body: BODY,
+        headers: {
+          Authorization: newToken,
+        },
+      });
+      return {response: response2, method};
+    }
+
+    return {response, method};
   }
 
-  static async put(
-    type: 'none' | 'access' | 'refresh',
-    URI: string,
-    body: any,
-  ) {
-    return await CustomFetch('PUT', type, URI, body);
+  const response = await fetch(URL, {
+    method: 'DELETE',
+    headers: {
+      ...(token ? {Authorization: token} : {}),
+    },
+  });
+
+  if (response.status === 401) {
+    await update();
+    const newToken = `Bearer ${await MyLocalStorage.getItem('access')}`;
+    const response2 = await fetch(URL, {
+      method: 'DELETE',
+      headers: {
+        Authorization: newToken,
+      },
+    });
+    return {response: response2, method};
   }
 
-  static async delete(type: 'none' | 'access' | 'refresh', URI: string) {
-    return await CustomFetch('DELETE', type, URI, undefined);
-  }
+  return {response, method};
 }

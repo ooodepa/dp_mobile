@@ -1,5 +1,5 @@
 import MyLocalStorage from './../MyLocalStorage/MyLocalStorage';
-import ItemShortDto from '../FetchBackend/rest/api/items/dto/ItemShortDto';
+import ItemShortDto from '../FetchBackend/rest/api/items/dto/item-short.dto';
 
 interface IBasketItem {
   dp_id: string;

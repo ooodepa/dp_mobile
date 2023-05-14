@@ -17,10 +17,13 @@ import AppWrapper from '../../components/AppWrapper/AppWrapper';
 import isNoInternet from '../../utils/FetchBackend/isNoInternet';
 import FetchItems from '../../utils/FetchBackend/rest/api/items';
 import RootStackParamList from '../../navigation/RootStackParamList';
+import MyLocalStorage from '../../utils/MyLocalStorage/MyLocalStorage';
+import {AsyncAlertExceptionHelper} from '../../utils/AlertExceptionHelper';
 
 type IProps = NativeStackScreenProps<RootStackParamList, 'BasketPage'>;
 
 export default function BasketPage(props: IProps): JSX.Element {
+  // const [isLogin, setIsLogin] = useState(false);
   const [isRefreshing, setIsRefreshing] = useState(false);
   const isFocused = useIsFocused();
   const [products, setProducts] = useState([
@@ -65,9 +68,16 @@ export default function BasketPage(props: IProps): JSX.Element {
   }, [products, rerenderBasket]);
 
   async function onRefresh() {
-    setIsRefreshing(true);
-
     try {
+      setIsRefreshing(true);
+      const accessToken = await MyLocalStorage.getItem('access');
+      if (!accessToken) {
+        // setIsLogin(false);
+      }
+      if (accessToken) {
+        // setIsLogin(true);
+      }
+
       const models = await Basket.getModels();
       const prdcts = await FetchItems.getByModels(models);
       const bskt = await Basket.getBasketArray(prdcts);
@@ -75,6 +85,7 @@ export default function BasketPage(props: IProps): JSX.Element {
       setProducts(prdcts);
       setBasket(bskt);
     } catch (exception) {
+      await AsyncAlertExceptionHelper(exception);
       if (isNoInternet(exception)) {
         setIsRefreshing(false);
         return;

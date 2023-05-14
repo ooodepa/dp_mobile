@@ -1,73 +1,64 @@
-import {Alert} from 'react-native';
-
-import GetSessionsDto from './dto/GetSessionDto';
 import FetchBackend from '../../../FetchBackend';
-import CreateSessionDto from './dto/CreateSessionDto';
-import HttpResponseDto from '../../../HttpResponseDto';
+import GetSessionDto from './dto/get-session.dto';
+import CreateSessionDto from './dto/create-session.dto';
 import HttpException from '../../../exceptions/HttpException';
-import CreateSessionResponseDto from './dto/CreateSessionResponseDto';
+import CreateSessionResponseDto from './dto/create-session-response.dto';
 
 export default class FetchSessions {
   static async create(dto: CreateSessionDto) {
-    const URI = 'sessions';
-    const response = await FetchBackend.post('none', URI, dto);
+    const result = await FetchBackend('none', 'POST', 'sessions', dto);
+    const response = result.response;
 
     if (response.status === 201) {
       const json: CreateSessionResponseDto = await response.json();
       return json;
     }
 
-    const json: HttpResponseDto = await response.json();
-    const message = `Код: ${response.status} \n\n${json.message}`;
-    Alert.alert('Вход в аккаунт', message);
-
-    throw new HttpException('POST', response);
+    throw new HttpException(result.method, response);
   }
 
   static async logout() {
-    const URI = 'sessions/logout';
-    const response = await FetchBackend.post('access', URI);
+    const result = await FetchBackend('access', 'POST', 'sessions/logout');
+    const response = result.response;
 
     if (response.status === 200) {
       return true;
     }
 
-    if (response.status === 201) {
-      return true;
-    }
-    return false;
+    throw new HttpException(result.method, response);
   }
 
-  static async getAll(): Promise<GetSessionsDto[]> {
-    const URI = 'sessions';
-    const response = await FetchBackend.get('access', URI);
+  static async getAll() {
+    const result = await FetchBackend('access', 'GET', 'sessions');
+    const response = result.response;
 
     if (response.status === 200) {
-      const data: GetSessionsDto[] = await response.json();
+      const data: GetSessionDto[] = await response.json();
       return data;
     }
 
-    throw new HttpException('GET', response);
+    throw new HttpException(result.method, response);
   }
 
   static async remove(id: number) {
-    const URI = `sessions/${id}`;
-    const response = await FetchBackend.delete('access', URI);
+    const result = await FetchBackend('access', 'DELETE', `sessions/${id}`);
+    const response = result.response;
 
     if (response.status === 200) {
       return true;
     }
 
-    throw new HttpException('DELETE', response);
+    throw new HttpException(result.method, response);
   }
 
   static async removeAll() {
-    const response = await FetchBackend.delete('access', 'sessions');
+    const result = await FetchBackend('access', 'DELETE', 'sessions');
+    const response = result.response;
 
     if (response.status === 200) {
       return true;
     }
 
-    throw new HttpException('DELETE', response);
+    throw new HttpException(result.method, response);
   }
 }

@@ -1,6 +1,11 @@
 import {StyleSheet} from 'react-native';
 
 const styles = StyleSheet.create({
+  list_empty_text: {
+    marginTop: 16,
+    textAlign: 'center',
+    color: 'black',
+  },
   like: {
     position: 'absolute',
     right: 0,

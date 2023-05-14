@@ -4,6 +4,9 @@ import {NativeStackScreenProps} from '@react-navigation/native-stack';
 import {View, Text, Pressable, RefreshControl, Linking} from 'react-native';
 
 import styles from './ArticlePageStyles';
+import AlertExceptionHelper, {
+  AsyncAlertExceptionHelper,
+} from '../../utils/AlertExceptionHelper';
 import ContactPosts from './ContactPosts/ContactPosts';
 import isNoInternet from '../../utils/FetchBackend/isNoInternet';
 import AppWrapper from './../../components/AppWrapper/AppWrapper';
@@ -83,6 +86,7 @@ function ArticlePage(props: Props): JSX.Element {
       setArticleDate(data);
       props.navigation.setOptions({title: data.dp_name});
     } catch (exception) {
+      await AsyncAlertExceptionHelper(exception);
       if (isNoInternet(exception)) {
         setIsRefreshing(false);
         return;
@@ -95,8 +99,8 @@ function ArticlePage(props: Props): JSX.Element {
   async function openLink(url: string) {
     try {
       await Linking.openURL(url);
-    } catch (err) {
-      //err
+    } catch (exception) {
+      AlertExceptionHelper(exception);
     }
   }
 

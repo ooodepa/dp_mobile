@@ -1,5 +1,5 @@
 module.exports = {
-  requireConfigFile: false,
+  // requireConfigFile: false,
   root: true,
   extends: '@react-native-community',
   rules: {

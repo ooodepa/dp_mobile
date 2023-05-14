@@ -11,6 +11,7 @@ interface UpdateSessionDto {
 export default async function isAccessTokenUpdated() {
   const URL_SEGMENT = '/api/v1/sessions';
   const URL = `${env.REACT_NATIVE__BACKEND_URL}${URL_SEGMENT}`;
+  // eslint-disable-next-line no-console
   console.log(`PATCH ${URL}`);
 
   const refreshToken = await MyLocalStorage.getItem('refresh');

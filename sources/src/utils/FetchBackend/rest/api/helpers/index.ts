@@ -1,18 +1,17 @@
-import HelperDto from './dto/HelperDto';
+import HelperDto from './dto/helper.dto';
 import FetchBackend from '../../../FetchBackend';
 import HttpException from '../../../exceptions/HttpException';
 
 export default class FetchHelpers {
   static async getAll() {
-    const URI = 'helpers';
-
-    const response = await FetchBackend.get('none', URI);
+    const result = await FetchBackend('none', 'GET', 'helpers');
+    const response = result.response;
 
     if (response.status === 200) {
       const json: HelperDto[] = await response.json();
       return json;
     }
 
-    throw new HttpException('GET', response);
+    throw new HttpException(result.method, response);
   }
 }

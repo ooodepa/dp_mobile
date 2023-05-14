@@ -11,7 +11,8 @@ import isNoInternet from '../../utils/FetchBackend/isNoInternet';
 import FetchItems from '../../utils/FetchBackend/rest/api/items';
 import RootStackParamList from '../../navigation/RootStackParamList';
 import MyLocalStorage from '../../utils/MyLocalStorage/MyLocalStorage';
-import ItemDto from '../../utils/FetchBackend/rest/api/items/dto/ItemDto';
+import ItemDto from '../../utils/FetchBackend/rest/api/items/dto/item.dto';
+import {AsyncAlertExceptionHelper} from '../../utils/AlertExceptionHelper';
 import PostImageBlock from '../../components/PostImageBlock/PostImageBlock';
 import LikeUnlikeItemDto from '../../utils/LikeController/dto/LikeUnlikeItemDto';
 import FetchFavoriteItems from '../../utils/FetchBackend/rest/api/favorite-items';
@@ -51,8 +52,8 @@ function ItemsPage(props: Props) {
 
   async function onRefresh() {
     setIsRefreshing(true);
-    let items: ItemDto[] = [];
 
+    let items: ItemDto[] = [];
     try {
       const params: any = route.params;
       const {category} = params;
@@ -73,6 +74,8 @@ function ItemsPage(props: Props) {
       setLikeUnlikeItems(itms);
       setIsLogin(true);
     } catch (exception) {
+      await AsyncAlertExceptionHelper(exception);
+
       if (exception instanceof UnauthorizedException) {
         setIsLogin(false);
         MyLocalStorage.removeItem('access');
@@ -112,6 +115,8 @@ function ItemsPage(props: Props) {
         }),
       );
     } catch (exception) {
+      await AsyncAlertExceptionHelper(exception);
+
       if (exception instanceof UnauthorizedException) {
         setIsLogin(false);
         MyLocalStorage.removeItem('access');
@@ -143,6 +148,8 @@ function ItemsPage(props: Props) {
         }),
       );
     } catch (exception) {
+      await AsyncAlertExceptionHelper(exception);
+
       if (exception instanceof UnauthorizedException) {
         setIsLogin(false);
         MyLocalStorage.removeItem('access');

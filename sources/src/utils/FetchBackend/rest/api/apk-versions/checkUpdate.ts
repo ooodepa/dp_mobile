@@ -4,6 +4,7 @@ import FetchApkVersions from '.';
 import env from '../../../../../env';
 import isNoInternet from '../../../isNoInternet';
 import DataController from '../../../../DateConroller/DateController';
+import {AsyncAlertExceptionHelper} from '../../../../AlertExceptionHelper';
 
 export default async function checkUpdate(): Promise<number> {
   try {
@@ -45,6 +46,8 @@ export default async function checkUpdate(): Promise<number> {
 
     return 0;
   } catch (exception) {
+    await AsyncAlertExceptionHelper(exception);
+
     if (isNoInternet(exception)) {
       return -1;
     }
@@ -55,7 +58,7 @@ export default async function checkUpdate(): Promise<number> {
 async function downloadFile(url: string) {
   try {
     await Linking.openURL(url);
-  } catch (err) {
-    //err
+  } catch (exception) {
+    await AsyncAlertExceptionHelper(exception);
   }
 }

@@ -5,14 +5,15 @@ import {NativeStackScreenProps} from '@react-navigation/native-stack';
 
 import styles from './ItemBrandsPageStyles';
 import Search from '../../components/Search/Search';
-import RootStackParamList from '../../navigation/RootStackParamList';
-import isNoInternet from '../../utils/FetchBackend/isNoInternet';
 import AppWrapper from '../../components/AppWrapper/AppWrapper';
+import isNoInternet from '../../utils/FetchBackend/isNoInternet';
+import RootStackParamList from '../../navigation/RootStackParamList';
+import {AsyncAlertExceptionHelper} from '../../utils/AlertExceptionHelper';
 import FetchItemBrands from '../../utils/FetchBackend/rest/api/item-brands';
 import PostImageBlock from '../../components/PostImageBlock/PostImageBlock';
 import checkUpdate from '../../utils/FetchBackend/rest/api/apk-versions/checkUpdate';
 import SwipeDownToRefresh from '../../components/SwipeDownToRefresh/SwipeDownToRefresh';
-import ItemBrandsDto from '../../utils/FetchBackend/rest/api/item-brands/dto/ItemBrandDto';
+import ItemBrandsDto from '../../utils/FetchBackend/rest/api/item-brands/dto/item-brand.dto';
 
 type Props = NativeStackScreenProps<RootStackParamList, 'ItemBrandsPage'>;
 
@@ -51,6 +52,8 @@ function ItemBrandsPage(props: Props): JSX.Element {
     try {
       setArray(await FetchItemBrands.getAll());
     } catch (exception) {
+      await AsyncAlertExceptionHelper(exception);
+
       if (isNoInternet(exception)) {
         setIsRefreshing(false);
         return;

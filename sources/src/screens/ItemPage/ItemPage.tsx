@@ -7,6 +7,7 @@ import Basket from '../../utils/Basket/Basket';
 import AppWrapper from '../../components/AppWrapper/AppWrapper';
 import isNoInternet from '../../utils/FetchBackend/isNoInternet';
 import FetchItems from '../../utils/FetchBackend/rest/api/items';
+import {AsyncAlertExceptionHelper} from '../../utils/AlertExceptionHelper';
 import PostImageBlock from '../../components/PostImageBlock/PostImageBlock';
 import FetchItemCharacteristics from '../../utils/FetchBackend/rest/api/item-characteristics';
 
@@ -77,6 +78,7 @@ function ItemPage(): JSX.Element {
 
       setCounter(await Basket.getCount(data.dp_model));
     } catch (exception) {
+      await AsyncAlertExceptionHelper(exception);
       if (isNoInternet(exception)) {
         setIsRefreshing(false);
         return;

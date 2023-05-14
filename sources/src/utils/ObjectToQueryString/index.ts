@@ -1,3 +1,5 @@
+import AlertExceptionHelper from '../AlertExceptionHelper';
+
 function ObjectToQueryString(obj: any) {
   try {
     const keyValuePairs = [];
@@ -7,7 +9,8 @@ function ObjectToQueryString(obj: any) {
       );
     }
     return keyValuePairs.join('&');
-  } catch (err) {
+  } catch (exception) {
+    AlertExceptionHelper(exception);
     return '';
   }
 }

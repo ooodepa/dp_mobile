@@ -34,6 +34,7 @@ export default class FetchUnp {
   static async getByUnp(unp: string) {
     const URL = `https://www.portal.nalog.gov.by/grp/getData?unp=${unp}`;
     const response = await fetch(URL);
+    // eslint-disable-next-line no-console
     console.log(`GET ${response.url} ${response.status}`);
 
     if (response.status === 200) {
