@@ -16,9 +16,11 @@ import Basket from '../../utils/Basket/Basket';
 import AppWrapper from '../../components/AppWrapper/AppWrapper';
 import isNoInternet from '../../utils/FetchBackend/isNoInternet';
 import FetchItems from '../../utils/FetchBackend/rest/api/items';
+import FetchOrders from '../../utils/FetchBackend/rest/api/orders';
 import RootStackParamList from '../../navigation/RootStackParamList';
 import MyLocalStorage from '../../utils/MyLocalStorage/MyLocalStorage';
 import {AsyncAlertExceptionHelper} from '../../utils/AlertExceptionHelper';
+import CreateOrderDto from '../../utils/FetchBackend/rest/api/orders/dto/create-order.dto';
 
 type IProps = NativeStackScreenProps<RootStackParamList, 'BasketPage'>;
 
@@ -130,15 +132,30 @@ export default function BasketPage(props: IProps): JSX.Element {
     setRerenderBasket(e => e + 1);
   }
 
-  function MakeOrder() {
-    const isEmpty = isEmptyBasket();
-    if (isEmpty) {
-      return;
-    }
+  async function MakeOrder() {
+    try {
+      const isEmpty = isEmptyBasket();
+      if (isEmpty) {
+        return;
+      }
 
-    const title = 'Заглушка';
-    const message = 'Функция в разработке';
-    Alert.alert(title, message);
+      const dto: CreateOrderDto = {
+        dp_orderItems: basket.map(e => ({
+          dp_itemId: e.dp_id,
+          dp_count: e.dp_count,
+        })),
+      };
+      await FetchOrders.create(dto);
+
+      const title = 'Заявка';
+      const message = 'Заявка совершена. Проверьте вашу почту.';
+      Alert.alert(title, message);
+
+      await Basket.clear();
+      setBasket(await Basket.getBasketArray(products));
+    } catch (exception) {
+      await AsyncAlertExceptionHelper(exception);
+    }
   }
 
   function toItemBrandsPage() {

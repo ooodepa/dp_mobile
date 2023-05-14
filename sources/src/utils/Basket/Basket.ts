@@ -113,6 +113,10 @@ class Basket {
 
     return arr;
   }
+
+  static async clear() {
+    await MyLocalStorage.removeItem('dp_basket');
+  }
 }
 
 export default Basket;
