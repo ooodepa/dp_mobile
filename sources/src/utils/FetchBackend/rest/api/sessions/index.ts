@@ -1,5 +1,5 @@
 import FetchBackend from '../../../FetchBackend';
-import GetSessionDto from './dto/get-session.dto';
+import GetSessionsDto from './dto/get-sessions.dto';
 import CreateSessionDto from './dto/create-session.dto';
 import HttpException from '../../../exceptions/HttpException';
 import CreateSessionResponseDto from './dto/create-session-response.dto';
@@ -33,7 +33,7 @@ export default class FetchSessions {
     const response = result.response;
 
     if (response.status === 200) {
-      const data: GetSessionDto[] = await response.json();
+      const data: GetSessionsDto = await response.json();
       return data;
     }
 

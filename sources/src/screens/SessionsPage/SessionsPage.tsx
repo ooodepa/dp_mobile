@@ -18,8 +18,19 @@ type IProps = NativeStackScreenProps<RootStackParamList, 'SessionsPage'>;
 function SessionsPage(props: IProps): JSX.Element {
   const [isLogin, setIsLogin] = useState(false);
   const [isRefreshing, setIsRefreshing] = useState(false);
-  const [sessions, setSessions] = useState([
-    {dp_id: -1, dp_date: '', dp_ip: '', dp_agent: ''},
+  const [currentSession, setCurrentSession] = useState({
+    dp_id: -1,
+    dp_date: '',
+    dp_ip: '',
+    dp_agent: '',
+  });
+  const [otherSessions, setOtherSessions] = useState([
+    {
+      dp_id: -1,
+      dp_date: '',
+      dp_ip: '',
+      dp_agent: '',
+    },
   ]);
 
   useEffect(function () {
@@ -41,14 +52,16 @@ function SessionsPage(props: IProps): JSX.Element {
         return;
       }
 
-      setSessions(await FetchSessions.getAll());
+      const data = await FetchSessions.getAll();
+      setCurrentSession(data.dp_current);
+      setOtherSessions(data.dp_other);
       setIsRefreshing(false);
       setIsLogin(true);
     } catch (exception) {
       await AsyncAlertExceptionHelper(exception);
       if (exception instanceof HttpException && exception.HTTP_STATUS === 401) {
         setIsLogin(false);
-        setSessions([]);
+        setOtherSessions([]);
         props.navigation.navigate('AccountPage');
       }
     }
@@ -70,14 +83,14 @@ function SessionsPage(props: IProps): JSX.Element {
       await MyLocalStorage.removeItem('access');
       await MyLocalStorage.removeItem('refresh');
       setIsLogin(false);
-      setSessions([]);
+      setOtherSessions([]);
       props.navigation.navigate('AccountPage');
     } catch (exception) {
       await AsyncAlertExceptionHelper(exception);
 
       if (exception instanceof UnauthorizedException) {
         setIsLogin(false);
-        setSessions([]);
+        setOtherSessions([]);
         props.navigation.navigate('AccountPage');
       }
       if (isNoInternet(exception)) {
@@ -86,49 +99,58 @@ function SessionsPage(props: IProps): JSX.Element {
     }
   }
 
+  const date = new Date(currentSession.dp_date);
+  const strDate = DataController.getStringTime(date);
   return (
     <AppWrapper
       refreshControl={
         <RefreshControl refreshing={isRefreshing} onRefresh={onRefresh} />
       }>
-      <View style={styles.wrapper}>
-        <View style={styles.wrapper__content}>
-          {!isLogin
-            ? null
-            : sessions[0]?.dp_id === -1
-            ? null
-            : sessions.map(element => {
-                const date = new Date(element.dp_date);
-                const strDate = DataController.getStringTime(date);
-                const timeAgo = DataController.getTimeAgo(date);
-                return (
-                  <View key={element.dp_id} style={styles.sessions}>
-                    <Text style={styles.sessions__deviceNameText}>
-                      {element.dp_agent}
-                    </Text>
-                    <Text>IP: {element.dp_ip}</Text>
-                    <Text style={styles.sessions__date}>{strDate}</Text>
-                    <Text style={styles.sessions__timeAgoText}>{timeAgo}</Text>
-                    <Pressable onPress={() => remove(element.dp_id)}>
-                      <Text style={styles.sessions__closeText}>
-                        Завершить сеанс
-                      </Text>
-                    </Pressable>
-                  </View>
-                );
-              })}
-        </View>
+      <View style={styles.session__block}>
+        <Text style={styles.session__title}>Это устройство</Text>
 
-        <View style={styles.wrapper__footer}>
-          {!isLogin ? null : (
-            <Pressable onPress={removeAll}>
-              <Text style={styles.button__logoutAllText}>
-                Завершить все сеансы
-              </Text>
-            </Pressable>
-          )}
+        <View style={styles.session__element}>
+          <Text style={styles.sessions__deviceNameText}>
+            {currentSession.dp_agent}
+          </Text>
+          <Text>IP: {currentSession.dp_ip}</Text>
+          <Text style={styles.sessions__date}>{strDate}</Text>
         </View>
+        {!isLogin ? null : (
+          <Pressable onPress={removeAll}>
+            <Text style={styles.button__logoutAllText}>
+              Завершить все сеансы
+            </Text>
+          </Pressable>
+        )}
       </View>
+
+      {!isLogin ? null : !otherSessions.length ? null : (
+        <View style={styles.session__block}>
+          <Text style={styles.session__title}>Активные сеансы</Text>
+
+          {otherSessions.map(element => {
+            const otherDate = new Date(element.dp_date);
+            const otherStrDate = DataController.getStringTime(otherDate);
+            const otherTimeAgo = DataController.getTimeAgo(otherDate);
+            return (
+              <View key={element.dp_id} style={styles.session__element}>
+                <Text style={styles.sessions__deviceNameText}>
+                  {element.dp_agent}
+                </Text>
+                <Text>IP: {element.dp_ip}</Text>
+                <Text style={styles.sessions__date}>{otherStrDate}</Text>
+                <Text style={styles.sessions__timeAgoText}>{otherTimeAgo}</Text>
+                <Pressable onPress={() => remove(element.dp_id)}>
+                  <Text style={styles.sessions__closeText}>
+                    Завершить сеанс
+                  </Text>
+                </Pressable>
+              </View>
+            );
+          })}
+        </View>
+      )}
     </AppWrapper>
   );
 }

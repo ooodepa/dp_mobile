@@ -3,20 +3,6 @@ import {StyleSheet} from 'react-native';
 import env from '../../env';
 
 const styles = StyleSheet.create({
-  wrapper: {
-    flex: 1,
-  },
-  wrapper__content: {
-    width: '100%',
-    flex: 1,
-    justifyContent: 'flex-start',
-    alignItems: 'center',
-  },
-  wrapper__footer: {
-    width: '100%',
-    alignItems: 'center',
-    paddingBottom: 16,
-  },
   button__logoutAllText: {
     backgroundColor: '#dc3545',
     paddingVertical: 16,
@@ -26,15 +12,6 @@ const styles = StyleSheet.create({
     width: 300,
     textAlign: 'center',
     fontWeight: 'bold',
-  },
-  sessions: {
-    backgroundColor: 'white',
-    borderWidth: 1,
-    borderColor: '#d3d3d3',
-    width: 300,
-    marginVertical: 16,
-    padding: 8,
-    borderRadius: 8,
   },
   sessions__closeText: {
     textAlign: 'center',
@@ -57,6 +34,27 @@ const styles = StyleSheet.create({
   sessions__timeAgoText: {
     color: 'grey',
     textAlign: 'right',
+  },
+  session__block: {
+    width: '100%',
+    backgroundColor: 'white',
+    borderWidth: 1,
+    borderColor: '#d3d3d3',
+    padding: 8,
+    marginTop: 16,
+    alignItems: 'center',
+  },
+  session__title: {
+    textAlign: 'center',
+    color: env.appColor,
+    fontWeight: 'bold',
+  },
+  session__element: {
+    width: 300,
+    borderBottomColor: '#d3d3d3',
+    borderBottomWidth: 2,
+    paddingBottom: 8,
+    marginVertical: 8,
   },
 });
 
