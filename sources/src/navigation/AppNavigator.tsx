@@ -9,7 +9,9 @@ import RootStackParamList from './RootStackParamList';
 import ItemsPage from '../screens/ItemsPage/ItemsPage';
 import AboutPage from '../screens/AboutPage/AboutPage';
 import LoginPage from '../screens/LoginPage/LoginPage';
+import OrderPage from '../screens/OrderPage/OrderPage';
 import BasketPage from '../screens/BasketPage/BasketPage';
+import OrdersPage from '../screens/OrdersPage/OrdersPage';
 import AccountPage from '../screens/AccountPage/AccountPage';
 import ArticlePage from '../screens/ArticlePage/ArticlePage';
 import SessionsPage from '../screens/SessionsPage/SessionsPage';
@@ -20,6 +22,7 @@ import ResultSearchPage from '../screens/ResultSearchPage/ResultSearchPage';
 import RegistrationPage from '../screens/RegistrationPage/RegistrationPage';
 import ForgetPasswordPage from '../screens/ForgetPasswordPage/ForgetPasswordPage';
 import ItemCategoriesPage from '../screens/ItemCategoriesPage/ItemCategoriesPage';
+import EnvPage from '../screens/EnvPage/EnvPage';
 
 const Tab = createBottomTabNavigator();
 const Stack = createNativeStackNavigator<RootStackParamList>();
@@ -233,6 +236,27 @@ function AccountTab(): JSX.Element {
         component={ItemPage}
         options={{
           title: 'Номенклатура',
+        }}
+      />
+      <Stack.Screen
+        name="OrdersPage"
+        component={OrdersPage}
+        options={{
+          title: 'Мои заказы',
+        }}
+      />
+      <Stack.Screen
+        name="OrderPage"
+        component={OrderPage}
+        options={{
+          title: 'Мой заказ',
+        }}
+      />
+      <Stack.Screen
+        name="EnvPage"
+        component={EnvPage}
+        options={{
+          title: 'ENV',
         }}
       />
     </Stack.Navigator>

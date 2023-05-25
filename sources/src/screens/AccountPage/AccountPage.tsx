@@ -98,6 +98,10 @@ function AccountPage(props: IProps): JSX.Element {
     props.navigation.navigate('AboutPage');
   }
 
+  function openOrderPage() {
+    props.navigation.navigate('OrdersPage');
+  }
+
   return (
     <AppWrapper title={isLogin ? 'Мой профиль' : 'Войдите в профиль'}>
       <View style={styles.wrapper}>
@@ -116,6 +120,9 @@ function AccountPage(props: IProps): JSX.Element {
                 style={styles.button__wrapper}
                 onPress={openFavoritePage}>
                 <Text style={styles.button__text}>Избранные</Text>
+              </Pressable>
+              <Pressable style={styles.button__wrapper} onPress={openOrderPage}>
+                <Text style={styles.button__text}>Мои заказы</Text>
               </Pressable>
               <Pressable
                 style={styles.button__wrapper}

@@ -7,6 +7,7 @@ type RootStackParamList = {
   };
   ArticlesPage: undefined;
   BasketPage: undefined;
+  EnvPage: undefined;
   FavoritePage: undefined;
   ForgetPasswordPage: undefined;
   ItemBrandsPage: undefined;
@@ -24,6 +25,10 @@ type RootStackParamList = {
     // dp_itemCategoryId?: number;
   };
   LoginPage: undefined;
+  OrderPage: {
+    dp_id: string;
+  };
+  OrdersPage: undefined;
   RegistrationPage: undefined;
   ResultSearchPage: {
     search: string;

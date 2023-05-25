@@ -13,10 +13,6 @@ const styles = StyleSheet.create({
     textAlign: 'center',
     color: 'black',
   },
-  text__toEnvPage: {
-    color: '#06c',
-    textAlign: 'center',
-  },
 });
 
 export default styles;

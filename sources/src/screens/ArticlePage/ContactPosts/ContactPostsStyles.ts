@@ -7,11 +7,15 @@ const styles = StyleSheet.create({
     marginHorizontal: 8,
     marginVertical: 24,
   },
-  item__text: {
+  item__name: {
     color: env.appColor,
     fontWeight: 'bold',
     textAlign: 'center',
     fontSize: 24,
+  },
+  item__text: {
+    color: 'black',
+    textAlign: 'center',
   },
   communicationIcons__wrapper: {
     alignItems: 'center',

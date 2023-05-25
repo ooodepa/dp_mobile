@@ -111,7 +111,8 @@ function ContactPosts(props: IProps) {
 
         return (
           <View key={element.dp_id} style={styles.item__block}>
-            <Text style={styles.item__text}>{element.dp_name}</Text>
+            <Text style={styles.item__name}>{element.dp_name}</Text>
+            <Text style={styles.item__text}>{element.dp_text}</Text>
             <View style={styles.buttons__wrapper}>
               {element.dp_helperContactTypes.map(j => {
                 if (j.dp_isHidden) {

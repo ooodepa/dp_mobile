@@ -10,7 +10,7 @@ interface HelperDto {
   dp_id: string;
   dp_sortingIndex: number;
   dp_name: string;
-  dp_description: string;
+  dp_text: string;
   dp_isHidden: boolean;
   dp_helperContactTypes: LstHelperCommunicationTypeEntity[];
 }

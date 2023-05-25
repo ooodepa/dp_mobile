@@ -57,5 +57,7 @@ ${json.message}
     }
 
     Alert.alert('Ошибка', `${err}`);
+    // eslint-disable-next-line no-console
+    console.log(err);
   }
 }
