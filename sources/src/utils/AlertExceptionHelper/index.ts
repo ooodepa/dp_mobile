@@ -13,6 +13,13 @@ export default function AlertExceptionHelper(exception: any) {
     ) {
       ToastController.toastShort('Нет доступа к интернету...');
     }
+
+    if (exception instanceof Error) {
+      ToastController.toastShort(`${exception.message}`);
+      return;
+    }
+
+    ToastController.toastShort(`${exception}`);
   } catch (err) {
     Alert.alert('Ошибка', `${err}`);
   }

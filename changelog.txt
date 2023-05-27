@@ -1,3 +1,8 @@
+0.8.1
+
+- toast Error exception
+- table with chharacteristics added for item page
+
 0.8.0
 
 - when you tap on an item in the basket page, you can open a page with item

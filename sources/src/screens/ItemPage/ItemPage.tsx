@@ -31,7 +31,7 @@ function ItemPage(): JSX.Element {
     dp_itemCategoryId: -1,
     dp_seoKeywords: '',
     dp_seoDescription: '',
-    dp_itemCharecteristics: [
+    dp_itemCharacteristics: [
       {
         dp_id: -1,
         dp_itemId: '',
@@ -98,15 +98,18 @@ function ItemPage(): JSX.Element {
     setCounter(await Basket.getCount(model));
   }
 
-  function countChange(value: string) {
-    const str = value.trim();
-    const cntr = Number(str);
+  async function countChange(model: string, strCount: string) {
+    const str = strCount.trim();
+    const countr = parseInt(str, 10);
 
-    if (isNaN(cntr)) {
+    if (isNaN(countr)) {
+      await Basket.setCount(model, 0);
       setCounter(0);
       return;
     }
-    setCounter(cntr);
+
+    await Basket.setCount(model, countr);
+    setCounter(countr);
   }
 
   return (
@@ -127,7 +130,7 @@ function ItemPage(): JSX.Element {
           placeholder={`${counter}`}
           keyboardType="numeric"
           value={`${counter}`}
-          onChangeText={value => countChange(value)}
+          onChangeText={text => countChange(productData.dp_model, text)}
         />
         <Pressable onPress={() => countPlus(productData.dp_model)}>
           <View style={styles.count__button}>
@@ -135,27 +138,71 @@ function ItemPage(): JSX.Element {
           </View>
         </Pressable>
       </View>
-      <View style={styles.info__block}>
-        <Text style={styles.item__nameText}>{productData.dp_name}</Text>
-      </View>
-      {productData.dp_itemCharecteristics?.map(characteristic => {
-        const charId = characteristic.dp_characteristicId;
-
-        let key = '';
-        for (let i = 0; i < itemCharacteristics.length; ++i) {
-          if (itemCharacteristics[i].dp_id === charId) {
-            key = itemCharacteristics[i].dp_name;
-          }
-        }
-
-        return (
-          <View key={characteristic.dp_id}>
-            <Text style={styles.characteristic__text}>
-              {key}: {characteristic.dp_value}
+      <View style={styles.table}>
+        <View style={styles.table__row}>
+          <View style={styles.table__span2}>
+            <Text style={styles.table__span2Title}>Данные номенклатуры:</Text>
+          </View>
+        </View>
+        {[
+          {key: 'Наименование', value: productData.dp_name},
+          {key: 'Модель', value: productData.dp_model},
+          {
+            key: 'Цена без НДС',
+            value: `Br ${Number(productData.dp_cost).toFixed(2)}`,
+          },
+        ].map(e => {
+          return (
+            <View key={e.key} style={styles.table__row}>
+              <View style={styles.table__key}>
+                <Text style={styles.table__keyText}>{e.key}</Text>
+              </View>
+              <View style={styles.table__value}>
+                <Text style={styles.table__valueText}>{e.value}</Text>
+              </View>
+            </View>
+          );
+        })}
+        <View style={styles.table__row}>
+          <View style={styles.table__span2}>
+            <Text style={styles.table__span2Title}>
+              Дополнительные характеристики:
             </Text>
           </View>
-        );
-      })}
+        </View>
+        {!productData.dp_itemCharacteristics.length ? (
+          <View style={styles.table__row}>
+            <View style={styles.table__span2}>
+              <Text style={styles.table__span2Text}>
+                Дополнительные характеристики не указаны
+              </Text>
+            </View>
+          </View>
+        ) : null}
+        {productData.dp_itemCharacteristics?.map(characteristic => {
+          const charId = characteristic.dp_characteristicId;
+
+          let key = '';
+          for (let i = 0; i < itemCharacteristics.length; ++i) {
+            if (itemCharacteristics[i].dp_id === charId) {
+              key = itemCharacteristics[i].dp_name;
+            }
+          }
+
+          return (
+            <View key={characteristic.dp_id} style={styles.table__row}>
+              <View style={styles.table__key}>
+                <Text style={styles.table__keyText}>{key}</Text>
+              </View>
+              <View style={styles.table__value}>
+                <Text style={styles.table__valueText}>
+                  {characteristic.dp_value}
+                </Text>
+              </View>
+            </View>
+          );
+        })}
+      </View>
     </AppWrapper>
   );
 }

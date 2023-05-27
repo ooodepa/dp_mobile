@@ -20,7 +20,7 @@ interface ItemDto {
   dp_itemCategoryId: number;
   dp_seoKeywords: string;
   dp_seoDescription: string;
-  dp_itemCharecteristics: ItemCharacteristicDto[];
+  dp_itemCharacteristics: ItemCharacteristicDto[];
   dp_itemGalery: ItemGaleryDto[];
 }
 

@@ -12,13 +12,13 @@ async function update() {
   const refreshToken = await MyLocalStorage.getItem('refresh');
 
   if (!refreshToken) {
-    return false;
+    throw new Error('Войдите в аккаунт');
   }
 
   const method = 'PATCH';
   const URL = `${env.REACT_NATIVE__BACKEND_URL}/api/v1/sessions`;
   // eslint-disable-next-line no-console
-  console.log(`${method} ${URL}`);
+  console.log({method, URL});
 
   const response = await fetch(
     `${env.REACT_NATIVE__BACKEND_URL}/api/v1/sessions`,
@@ -61,8 +61,7 @@ export default async function FetchBackend(
   const URL = `${env.REACT_NATIVE__BACKEND_URL}/api/v1/${uri}`;
   const BODY = JSON.stringify(body);
   // eslint-disable-next-line no-console
-  console.log(`${method} ${URL} ${type === 'access' ? 'with access' : '--'}`);
-  console.log({method, URL});
+  console.log({method, URL, isUseAssess: type === 'access'});
 
   if (method === 'GET') {
     const response = await fetch(URL, {
