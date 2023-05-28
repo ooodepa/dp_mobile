@@ -4,6 +4,7 @@ import {NavigationContainer} from '@react-navigation/native';
 import {createBottomTabNavigator} from '@react-navigation/bottom-tabs';
 import {createNativeStackNavigator} from '@react-navigation/native-stack';
 
+import EnvPage from '../screens/EnvPage/EnvPage';
 import ItemPage from '../screens/ItemPage/ItemPage';
 import RootStackParamList from './RootStackParamList';
 import ItemsPage from '../screens/ItemsPage/ItemsPage';
@@ -22,7 +23,7 @@ import ResultSearchPage from '../screens/ResultSearchPage/ResultSearchPage';
 import RegistrationPage from '../screens/RegistrationPage/RegistrationPage';
 import ForgetPasswordPage from '../screens/ForgetPasswordPage/ForgetPasswordPage';
 import ItemCategoriesPage from '../screens/ItemCategoriesPage/ItemCategoriesPage';
-import EnvPage from '../screens/EnvPage/EnvPage';
+import ChangePasswordPage from '../screens/ChangePasswordPage/ChangePasswordPage';
 
 const Tab = createBottomTabNavigator();
 const Stack = createNativeStackNavigator<RootStackParamList>();
@@ -257,6 +258,13 @@ function AccountTab(): JSX.Element {
         component={EnvPage}
         options={{
           title: 'ENV',
+        }}
+      />
+      <Stack.Screen
+        name="ChangePasswordPage"
+        component={ChangePasswordPage}
+        options={{
+          title: 'Смена пароля',
         }}
       />
     </Stack.Navigator>

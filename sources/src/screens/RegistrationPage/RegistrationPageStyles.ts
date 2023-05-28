@@ -8,12 +8,10 @@ const styles = StyleSheet.create({
     alignItems: 'center',
   },
   wrapper__content: {
-    maxWidth: 300,
     width: '100%',
     flex: 1,
   },
   wrapper__footer: {
-    maxWidth: 300,
     width: '100%',
   },
   title: {

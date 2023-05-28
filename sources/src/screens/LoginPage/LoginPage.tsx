@@ -1,11 +1,15 @@
 import React, {useState} from 'react';
-import {View, Text, TextInput, Pressable} from 'react-native';
+import {View, Text, Pressable} from 'react-native';
 import {NativeStackScreenProps} from '@react-navigation/native-stack';
 
 import styles from './LoginPageStyles';
+import FormInput, {
+  FormInputPassword,
+} from '../../components/FormInput/FormInput';
 import AppWrapper from '../../components/AppWrapper/AppWrapper';
 import isNoInternet from '../../utils/FetchBackend/isNoInternet';
 import RootStackParamList from '../../navigation/RootStackParamList';
+import AppContainer from '../../components/AppContainer/AppContainer';
 import MyLocalStorage from '../../utils/MyLocalStorage/MyLocalStorage';
 import FetchSessions from '../../utils/FetchBackend/rest/api/sessions';
 import {AsyncAlertExceptionHelper} from '../../utils/AlertExceptionHelper';
@@ -31,7 +35,7 @@ function LoginPage(props: IProps): JSX.Element {
 
       props.navigation.navigate('AccountPage');
     } catch (exception) {
-      await AsyncAlertExceptionHelper(exception);
+      await AsyncAlertExceptionHelper(exception, 'Аутентификация');
 
       if (isNoInternet(exception)) {
         return;
@@ -51,35 +55,26 @@ function LoginPage(props: IProps): JSX.Element {
     <AppWrapper title="У вас уже есть аккаунт?">
       <View style={styles.wrapper}>
         <View style={styles.wrapper__content}>
-          <View style={styles.form}>
-            <Text style={styles.form__label}>E-mail или логин</Text>
-            <TextInput
-              placeholderTextColor="#a0a0a0"
-              style={styles.form__input}
-              placeholder={'E-mail или логин'}
+          <AppContainer>
+            <FormInput
+              label="E-mail или логин"
+              placeholder="Введите логин или электронную почту"
               value={emailOrLogin}
-              onChange={e => setEmailOrLogin(e.nativeEvent.text)}
+              setValue={e => setEmailOrLogin(e.nativeEvent.text)}
             />
-
-            <Text style={styles.form__label}>Пароль</Text>
-            <TextInput
-              placeholderTextColor="#a0a0a0"
-              style={styles.form__input}
-              placeholder={'Пароль'}
-              secureTextEntry={true}
+            <FormInputPassword
+              label="Пароль"
+              placeholder="Введите пароль"
               value={password}
-              onChange={e => setPassword(e.nativeEvent.text)}
+              setValue={e => setPassword(e.nativeEvent.text)}
             />
-
-            <View style={styles.form__inputs}>
-              <Pressable onPress={toForgetPasswordPage}>
-                <Text style={styles.form__textLink}>Забыли пароль?</Text>
-              </Pressable>
-            </View>
-          </View>
+            <Pressable onPress={toForgetPasswordPage}>
+              <Text style={styles.form__textLink}>Забыли пароль?</Text>
+            </Pressable>
+          </AppContainer>
         </View>
         <View style={styles.wrapper__footer}>
-          <View style={styles.form}>
+          <AppContainer>
             <View style={styles.form__footer}>
               <Pressable onPress={toCreateAccountPage}>
                 <Text style={styles.form__textLink}>Создать аккаунт</Text>
@@ -88,7 +83,7 @@ function LoginPage(props: IProps): JSX.Element {
                 <Text style={styles.form__buttonText}>Войти</Text>
               </Pressable>
             </View>
-          </View>
+          </AppContainer>
         </View>
       </View>
     </AppWrapper>

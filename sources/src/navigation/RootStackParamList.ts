@@ -7,6 +7,7 @@ type RootStackParamList = {
   };
   ArticlesPage: undefined;
   BasketPage: undefined;
+  ChangePasswordPage: undefined;
   EnvPage: undefined;
   FavoritePage: undefined;
   ForgetPasswordPage: undefined;

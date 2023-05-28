@@ -25,21 +25,14 @@ export default function AlertExceptionHelper(exception: any) {
   }
 }
 
-export async function AsyncAlertExceptionHelper(exception: any) {
+export async function AsyncAlertExceptionHelper(
+  exception: any,
+  title: string = 'Ответ от сервера',
+) {
   try {
     if (exception instanceof HttpException && exception.HTTP_STATUS !== 401) {
       const json: HttpResponseDto = await exception.RESPONSE.json();
-
-      const title = 'Запрос на сервер (HttpException)';
-      const message = `
-${json.message}
-
-Дополнительная информация:
-- Method: ${exception.HTTP_METHOD}
-- URL: ${exception.HTTP_URL}
-- HTTP status: ${exception.HTTP_STATUS}
-        `;
-
+      const message = `\n ${json.message}`;
       Alert.alert(title, message);
       return;
     }
@@ -52,13 +45,10 @@ ${json.message}
     AlertExceptionHelper(exception);
   } catch (err) {
     if (err instanceof HttpException) {
-      const title = 'Запрос на сервер (HttpException)';
-      const message = `
-  - Method: ${err.HTTP_METHOD}
-  - URL: ${err.HTTP_URL}
-  - HTTP status: ${err.HTTP_STATUS}
-          `;
-
+      let message = '\n ';
+      message += `HTTP status: ${err.HTTP_STATUS} \n`;
+      message += `Method: ${err.HTTP_METHOD} \n`;
+      message += `URL: ${err.HTTP_URL} \n`;
       Alert.alert(title, message);
       return;
     }

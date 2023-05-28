@@ -4,9 +4,8 @@ import env from '../../env';
 
 const styles = StyleSheet.create({
   button: {
-    width: '100%',
     marginVertical: 16,
-    padding: 8,
+    padding: 16,
     borderRadius: 8,
     backgroundColor: env.appColor,
   },

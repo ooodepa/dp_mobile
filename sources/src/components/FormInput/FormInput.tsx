@@ -1,11 +1,14 @@
 import {
+  View,
   KeyboardTypeOptions,
   TextInput,
   Text,
   TextInputChangeEventData,
   NativeSyntheticEvent,
+  TouchableOpacity,
 } from 'react-native';
-import React from 'react';
+import React, {useState} from 'react';
+import Icon from 'react-native-vector-icons/FontAwesome';
 
 import styles from './FormInputStyles';
 
@@ -33,6 +36,40 @@ export default function FormInput(props: IPropsFromInput) {
         keyboardType={props.keyboardType}
         secureTextEntry={props.secureTextEntry}
       />
+    </>
+  );
+}
+
+export function FormInputPassword(props: IPropsFromInput) {
+  const [showPassword, setShowPassword] = useState(false);
+
+  function toggleShowPassword() {
+    setShowPassword(!showPassword);
+  }
+
+  return (
+    <>
+      <Text style={styles.form__label}>{props.label}</Text>
+      <View style={styles.row}>
+        <TextInput
+          placeholderTextColor="#a0a0a0"
+          style={styles.form__input}
+          placeholder={props.placeholder}
+          value={props.value}
+          onChange={props.setValue}
+          keyboardType={props.keyboardType}
+          secureTextEntry={!showPassword}
+        />
+        <TouchableOpacity
+          style={styles.toggleButton}
+          onPress={toggleShowPassword}>
+          <Icon
+            name={showPassword ? 'eye' : 'eye-slash'}
+            color={'gray'}
+            size={24}
+          />
+        </TouchableOpacity>
+      </View>
     </>
   );
 }

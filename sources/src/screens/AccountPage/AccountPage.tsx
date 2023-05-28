@@ -70,6 +70,10 @@ function AccountPage(props: IProps): JSX.Element {
     props.navigation.navigate('SessionsPage');
   }
 
+  function openChangePasswordPage() {
+    props.navigation.navigate('ChangePasswordPage');
+  }
+
   async function logout() {
     try {
       await FetchSessions.logout();
@@ -128,6 +132,11 @@ function AccountPage(props: IProps): JSX.Element {
                 style={styles.button__wrapper}
                 onPress={openSessionsPage}>
                 <Text style={styles.button__text}>Устройства</Text>
+              </Pressable>
+              <Pressable
+                style={styles.button__wrapper}
+                onPress={openChangePasswordPage}>
+                <Text style={styles.button__text}>Смена пароля</Text>
               </Pressable>
               <Pressable style={styles.button__wrapper} onPress={logout}>
                 <Text style={styles.button__text}>Выход с аккаунта</Text>
