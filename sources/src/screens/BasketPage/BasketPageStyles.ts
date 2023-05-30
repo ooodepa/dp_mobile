@@ -3,22 +3,6 @@ import {StyleSheet} from 'react-native';
 import env from '../../env';
 
 const styles = StyleSheet.create({
-  block__center: {
-    justifyContent: 'center',
-    alignItems: 'center',
-  },
-  button__wrapper: {
-    backgroundColor: env.appColor,
-    width: 300,
-    alignContent: 'center',
-    padding: 16,
-    borderRadius: 8,
-    marginBottom: 8,
-  },
-  button__text: {
-    color: 'white',
-    textAlign: 'center',
-  },
   items: {
     display: 'flex',
     alignItems: 'center',

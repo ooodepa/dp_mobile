@@ -18,7 +18,9 @@ import ArticlePage from '../screens/ArticlePage/ArticlePage';
 import SessionsPage from '../screens/SessionsPage/SessionsPage';
 import FavoritePage from '../screens/FavoritePage/FavoritePage';
 import ArticlesPage from '../screens/ArticlesPage/ArticlesPage';
+import SendCheckPage from '../screens/SendCheckPage/SendCheckPage';
 import ItemBrandsPage from '../screens/ItemBrandsPage/ItemBrandsPage';
+import ChangeEmailPage from '../screens/ChangeEmailPage/ChangeEmailPage';
 import ResultSearchPage from '../screens/ResultSearchPage/ResultSearchPage';
 import RegistrationPage from '../screens/RegistrationPage/RegistrationPage';
 import ForgetPasswordPage from '../screens/ForgetPasswordPage/ForgetPasswordPage';
@@ -176,6 +178,11 @@ function BasketTab(): JSX.Element {
         component={ItemPage}
         options={{title: 'Номенклатура'}}
       />
+      <Stack.Screen
+        name="SendCheckPage"
+        component={SendCheckPage}
+        options={{title: 'Получение счёта на почту'}}
+      />
     </Stack.Navigator>
   );
 }
@@ -266,6 +273,18 @@ function AccountTab(): JSX.Element {
         options={{
           title: 'Смена пароля',
         }}
+      />
+      <Stack.Screen
+        name="ChangeEmailPage"
+        component={ChangeEmailPage}
+        options={{
+          title: 'Смена e-mail',
+        }}
+      />
+      <Stack.Screen
+        name="SendCheckPage"
+        component={SendCheckPage}
+        options={{title: 'Получение счёта на почту'}}
       />
     </Stack.Navigator>
   );

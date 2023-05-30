@@ -13,6 +13,15 @@ const styles = StyleSheet.create({
     color: 'black',
     backgroundColor: 'white',
   },
+  form__input_disabled: {
+    flex: 1,
+    borderColor: 'gray',
+    borderWidth: 2,
+    padding: 8,
+    marginVertical: 8,
+    borderRadius: 4,
+    color: 'black',
+  },
   form__label: {
     color: env.appColor,
     fontWeight: 'bold',

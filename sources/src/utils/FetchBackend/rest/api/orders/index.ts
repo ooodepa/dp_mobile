@@ -1,6 +1,8 @@
 import GetOrderDto from './dto/get-order.dto';
+import SendCheckDto from './dto/send-check.dto';
 import FetchBackend from '../../../FetchBackend';
 import CreateOrderDto from './dto/create-order.dto';
+import GetOrderWithIdDto from './dto/get-order-with-id.dto';
 import HttpException from '../../../exceptions/HttpException';
 
 export default class FetchOrders {
@@ -9,7 +11,8 @@ export default class FetchOrders {
     const response = result.response;
 
     if (response.status === 201) {
-      return true;
+      const json: GetOrderDto = await response.json();
+      return json;
     }
 
     throw new HttpException(result.method, response);
@@ -20,7 +23,7 @@ export default class FetchOrders {
     const response = result.response;
 
     if (response.status === 200) {
-      const json: GetOrderDto[] = await response.json();
+      const json: GetOrderWithIdDto[] = await response.json();
       return json;
     }
 
@@ -29,6 +32,23 @@ export default class FetchOrders {
 
   static async getById(id: string) {
     const result = await FetchBackend('access', 'GET', `orders/${id}`);
+    const response = result.response;
+
+    if (response.status === 200) {
+      const json: GetOrderWithIdDto = await response.json();
+      return json;
+    }
+
+    throw new HttpException(result.method, response);
+  }
+
+  static async sendCheck(id: string, dto: SendCheckDto) {
+    const result = await FetchBackend(
+      'access',
+      'POST',
+      `orders/${id}/send-check`,
+      dto,
+    );
     const response = result.response;
 
     if (response.status === 200) {

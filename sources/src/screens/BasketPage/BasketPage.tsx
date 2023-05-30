@@ -13,11 +13,13 @@ import {NativeStackScreenProps} from '@react-navigation/native-stack';
 
 import styles from './BasketPageStyles';
 import Basket from '../../utils/Basket/Basket';
+import AppButton from '../../components/AppButton/AppButton';
 import AppWrapper from '../../components/AppWrapper/AppWrapper';
 import isNoInternet from '../../utils/FetchBackend/isNoInternet';
 import FetchItems from '../../utils/FetchBackend/rest/api/items';
 import FetchOrders from '../../utils/FetchBackend/rest/api/orders';
 import RootStackParamList from '../../navigation/RootStackParamList';
+import AppContainer from '../../components/AppContainer/AppContainer';
 import MyLocalStorage from '../../utils/MyLocalStorage/MyLocalStorage';
 import {AsyncAlertExceptionHelper} from '../../utils/AlertExceptionHelper';
 import CreateOrderDto from '../../utils/FetchBackend/rest/api/orders/dto/create-order.dto';
@@ -51,6 +53,7 @@ export default function BasketPage(props: IProps): JSX.Element {
     },
   ]);
   const [rerenderBasket, setRerenderBasket] = useState(1);
+  const [isDisableButton, setIsDisableButton] = useState(false);
 
   useEffect(() => {
     if (!isFocused) {
@@ -134,6 +137,7 @@ export default function BasketPage(props: IProps): JSX.Element {
 
   async function MakeOrder() {
     try {
+      setIsDisableButton(true);
       const isEmpty = isEmptyBasket();
       if (isEmpty) {
         return;
@@ -145,15 +149,30 @@ export default function BasketPage(props: IProps): JSX.Element {
           dp_count: e.dp_count,
         })),
       };
-      await FetchOrders.create(dto);
+      const orderData = await FetchOrders.create(dto);
 
       const title = 'Заявка';
-      const message = 'Заявка совершена. Проверьте вашу почту.';
-      Alert.alert(title, message);
+      let message = '';
+      message += 'Заявка отправлена менеджеру. \n\n';
+      message += 'Хотите получить ещё счет фактуру в Excel на почту?';
+      Alert.alert(title, message, [
+        {
+          text: 'Получить',
+          onPress: () =>
+            props.navigation.push('SendCheckPage', {
+              orderId: orderData.dp_id,
+            }),
+        },
+        {
+          text: 'Не надо',
+        },
+      ]);
 
       await Basket.clear();
       setBasket(await Basket.getBasketArray(products));
+      setIsDisableButton(false);
     } catch (exception) {
+      setIsDisableButton(false);
       await AsyncAlertExceptionHelper(exception);
     }
   }
@@ -229,17 +248,17 @@ export default function BasketPage(props: IProps): JSX.Element {
             );
           })}
       </View>
-      <View style={styles.block__center}>
+      <AppContainer>
         {basket.length === 0 ? (
-          <Pressable style={styles.button__wrapper} onPress={toItemBrandsPage}>
-            <Text style={styles.button__text}>Выбрать товары</Text>
-          </Pressable>
+          <AppButton onPress={toItemBrandsPage} text="Выбрать товары" />
         ) : (
-          <Pressable style={styles.button__wrapper} onPress={MakeOrder}>
-            <Text style={styles.button__text}>Оформить заявку</Text>
-          </Pressable>
+          <AppButton
+            onPress={MakeOrder}
+            text="Оформить заявку"
+            disabled={isDisableButton}
+          />
         )}
-      </View>
+      </AppContainer>
     </AppWrapper>
   );
 }

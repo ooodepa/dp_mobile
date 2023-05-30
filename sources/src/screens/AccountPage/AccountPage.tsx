@@ -7,6 +7,7 @@ import styles from './AccountPageStyles';
 import AlertExceptionHelper, {
   AsyncAlertExceptionHelper,
 } from '../../utils/AlertExceptionHelper';
+import AppButton from '../../components/AppButton/AppButton';
 import AppWrapper from '../../components/AppWrapper/AppWrapper';
 import FetchUsers from '../../utils/FetchBackend/rest/api/users';
 import RootStackParamList from '../../navigation/RootStackParamList';
@@ -74,6 +75,10 @@ function AccountPage(props: IProps): JSX.Element {
     props.navigation.navigate('ChangePasswordPage');
   }
 
+  function openChangeEmailPage() {
+    props.navigation.navigate('ChangeEmailPage');
+  }
+
   async function logout() {
     try {
       await FetchSessions.logout();
@@ -120,24 +125,11 @@ function AccountPage(props: IProps): JSX.Element {
                   {accountDate.dp_shortNameLegalEntity}
                 </Text>
               </View>
-              <Pressable
-                style={styles.button__wrapper}
-                onPress={openFavoritePage}>
-                <Text style={styles.button__text}>Избранные</Text>
-              </Pressable>
-              <Pressable style={styles.button__wrapper} onPress={openOrderPage}>
-                <Text style={styles.button__text}>Мои заказы</Text>
-              </Pressable>
-              <Pressable
-                style={styles.button__wrapper}
-                onPress={openSessionsPage}>
-                <Text style={styles.button__text}>Устройства</Text>
-              </Pressable>
-              <Pressable
-                style={styles.button__wrapper}
-                onPress={openChangePasswordPage}>
-                <Text style={styles.button__text}>Смена пароля</Text>
-              </Pressable>
+              <AppButton onPress={openFavoritePage} text="Избранные" />
+              <AppButton onPress={openOrderPage} text="Мои заказы" />
+              <AppButton onPress={openSessionsPage} text="Устройства" />
+              <AppButton onPress={openChangePasswordPage} text="Смена пароля" />
+              <AppButton onPress={openChangeEmailPage} text="Сменить e-mail" />
               <Pressable style={styles.button__wrapper} onPress={logout}>
                 <Text style={styles.button__text}>Выход с аккаунта</Text>
               </Pressable>

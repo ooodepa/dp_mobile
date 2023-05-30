@@ -1,8 +1,9 @@
 import {Alert} from 'react-native';
 
 import GetUserDto from './dto/get-user.dto';
-import CreateUserDto from './dto/create-user.dto';
 import FetchBackend from '../../../FetchBackend';
+import CreateUserDto from './dto/create-user.dto';
+import ChangeEmailDto from './dto/change-email.dto';
 import ChangePasswordDto from './dto/change-password.dto';
 import ForgetPasswordDto from './dto/forget-password.dto';
 import HttpException from '../../../exceptions/HttpException';
@@ -58,6 +59,22 @@ export default class FetchUsers {
       'access',
       'PATCH',
       'users/change-password',
+      dto,
+    );
+    const response = result.response;
+
+    if (response.status === 200) {
+      return true;
+    }
+
+    throw new HttpException(result.method, response);
+  }
+
+  static async changeEmail(dto: ChangeEmailDto) {
+    const result = await FetchBackend(
+      'access',
+      'PATCH',
+      'users/change-email',
       dto,
     );
     const response = result.response;

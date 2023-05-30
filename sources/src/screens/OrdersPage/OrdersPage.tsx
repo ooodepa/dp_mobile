@@ -9,30 +9,14 @@ import FetchOrders from '../../utils/FetchBackend/rest/api/orders';
 import RootStackParamList from '../../navigation/RootStackParamList';
 import DataController from '../../utils/DateConroller/DateController';
 import {AsyncAlertExceptionHelper} from '../../utils/AlertExceptionHelper';
+import GetOrderWithIdDto from '../../utils/FetchBackend/rest/api/orders/dto/get-order-with-id.dto';
 
 type Props = NativeStackScreenProps<RootStackParamList, 'OrdersPage'>;
 
 function OrdersPage(props: Props): JSX.Element {
   const isFocused = useIsFocused();
   const [isRefreshing, setIsRefreshing] = useState(false);
-  const [orders, setOrders] = useState([
-    {
-      dp_id: '',
-      dp_date: '',
-      dp_userId: -1,
-      dp_isCancelled: false,
-      dp_isCompleted: false,
-      dp_orderItems: [
-        {
-          dp_id: -1,
-          dp_orderId: '',
-          dp_itemId: '',
-          dp_count: 0,
-          dp_cost: 0,
-        },
-      ],
-    },
-  ]);
+  const [orders, setOrders] = useState<GetOrderWithIdDto[]>([]);
 
   useEffect(() => {
     setIsRefreshing(false);

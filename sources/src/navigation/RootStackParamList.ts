@@ -7,6 +7,7 @@ type RootStackParamList = {
   };
   ArticlesPage: undefined;
   BasketPage: undefined;
+  ChangeEmailPage: undefined;
   ChangePasswordPage: undefined;
   EnvPage: undefined;
   FavoritePage: undefined;
@@ -33,6 +34,9 @@ type RootStackParamList = {
   RegistrationPage: undefined;
   ResultSearchPage: {
     search: string;
+  };
+  SendCheckPage: {
+    orderId: string;
   };
   SessionsPage: undefined;
 };

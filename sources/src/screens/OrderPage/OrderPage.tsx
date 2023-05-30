@@ -3,12 +3,16 @@ import {View, Text, RefreshControl} from 'react-native';
 import {useIsFocused, useRoute} from '@react-navigation/native';
 
 import styles from './OrderPageStyles';
+import AppButton from '../../components/AppButton/AppButton';
 import AppWrapper from '../../components/AppWrapper/AppWrapper';
 import FetchItems from '../../utils/FetchBackend/rest/api/items';
 import FetchOrders from '../../utils/FetchBackend/rest/api/orders';
+import RootStackParamList from '../../navigation/RootStackParamList';
 import DataController from '../../utils/DateConroller/DateController';
+import {NativeStackScreenProps} from '@react-navigation/native-stack';
 import {AsyncAlertExceptionHelper} from '../../utils/AlertExceptionHelper';
 import PostImageBlock from '../../components/PostImageBlock/PostImageBlock';
+import GetOrderWithIdDto from '../../utils/FetchBackend/rest/api/orders/dto/get-order-with-id.dto';
 
 interface OrderItem {
   dp_count: number;
@@ -19,16 +23,20 @@ interface OrderItem {
   dp_photoUrl: string;
 }
 
-function OrderPage(): JSX.Element {
+type IProps = NativeStackScreenProps<RootStackParamList, 'OrderPage'>;
+
+export default function OrderPage(props: IProps): JSX.Element {
   const route = useRoute();
   const isFocused = useIsFocused();
   const [isRefreshing, setIsRefreshing] = useState(false);
-  const [order, setOrder] = useState({
+  const [order, setOrder] = useState<GetOrderWithIdDto>({
     dp_id: '',
     dp_date: '',
     dp_userId: -1,
-    dp_isCancelled: false,
-    dp_isCompleted: false,
+    dp_canceledByClient: null,
+    dp_canceledByManager: null,
+    dp_receivedByClient: null,
+    dp_sentedByManager: null,
     dp_orderItems: [
       {
         dp_id: -1,
@@ -111,6 +119,12 @@ function OrderPage(): JSX.Element {
         <View style={styles.item__block}>
           <Text style={styles.item__nameText}>{strDate}</Text>
           <Text style={styles.item__nameText}>Заказ оформлен {timeAgo}</Text>
+          <AppButton
+            onPress={() =>
+              props.navigation.push('SendCheckPage', {orderId: order.dp_id})
+            }
+            text="Отправить excel счёт на почту"
+          />
         </View>
         {orderItem.map(e => {
           const sum = e.dp_cost * e.dp_count;
@@ -126,11 +140,13 @@ function OrderPage(): JSX.Element {
               )}
               {!e.dp_cost ? null : (
                 <Text style={styles.item__costText}>
-                  (По цене с НДС) Br {e.dp_cost}
+                  (По цене с НДС) Br {Number(e.dp_cost).toFixed(2)}
                 </Text>
               )}
               {!sum ? null : (
-                <Text style={styles.item__costText}>(Итого) Br {sum}</Text>
+                <Text style={styles.item__costText}>
+                  (Итого) Br {Number(sum).toFixed(2)}
+                </Text>
               )}
             </View>
           );
@@ -139,5 +155,3 @@ function OrderPage(): JSX.Element {
     </AppWrapper>
   );
 }
-
-export default OrderPage;

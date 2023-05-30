@@ -40,6 +40,22 @@ export default function FormInput(props: IPropsFromInput) {
   );
 }
 
+interface IDisabledInput {
+  value: string;
+  label: string;
+}
+
+export function FormDisabledInput(props: IDisabledInput) {
+  return (
+    <>
+      <Text style={styles.form__label}>{props.label}</Text>
+      <View style={styles.form__input_disabled}>
+        <Text>{props.value}</Text>
+      </View>
+    </>
+  );
+}
+
 export function FormInputPassword(props: IPropsFromInput) {
   const [showPassword, setShowPassword] = useState(false);
 

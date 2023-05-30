@@ -275,7 +275,7 @@ function RegistrationPage(props: IProps): JSX.Element {
               <View style={styles.buttonsBlock__block}>
                 <AppButton
                   onPress={registration}
-                  text={`Продолжить ${step}/${lastStep}`}
+                  text={'Продолжить'}
                   disabled={step > lastStep}
                 />
               </View>
