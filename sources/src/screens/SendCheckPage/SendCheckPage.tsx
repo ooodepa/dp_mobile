@@ -1,16 +1,15 @@
 import {Alert} from 'react-native';
-import React, {useState} from 'react';
+import React, {useEffect, useState} from 'react';
 import {useRoute} from '@react-navigation/native';
 
-import FormInput, {
-  FormDisabledInput,
-} from '../../components/FormInput/FormInput';
+import FormInput from '../../components/FormInput/FormInput';
 import AppButton from '../../components/AppButton/AppButton';
 import AppWrapper from '../../components/AppWrapper/AppWrapper';
 import FetchOrders from '../../utils/FetchBackend/rest/api/orders';
 import RootStackParamList from '../../navigation/RootStackParamList';
 import AppContainer from '../../components/AppContainer/AppContainer';
 import {NativeStackScreenProps} from '@react-navigation/native-stack';
+import MyLocalStorage from '../../utils/MyLocalStorage/MyLocalStorage';
 import {AsyncAlertExceptionHelper} from '../../utils/AlertExceptionHelper';
 
 type IProps = NativeStackScreenProps<RootStackParamList, 'SendCheckPage'>;
@@ -22,6 +21,30 @@ export default function SendCheckPage(props: IProps) {
   const [checkingAccount, setCheckingAccount] = useState('');
   const [bank, setBank] = useState('');
   const [bik, setBik] = useState('');
+
+  useEffect(() => {
+    (async function () {
+      const dp_check_checkingAccount = await MyLocalStorage.getItem(
+        'dp_check_checkingAccount',
+      );
+
+      if (dp_check_checkingAccount) {
+        setCheckingAccount(dp_check_checkingAccount);
+      }
+
+      const dp_check_bank = await MyLocalStorage.getItem('dp_check_bank');
+
+      if (dp_check_bank) {
+        setBank(dp_check_bank);
+      }
+
+      const dp_check_bik = await MyLocalStorage.getItem('dp_check_bik');
+
+      if (dp_check_bik) {
+        setBik(dp_check_bik);
+      }
+    })();
+  }, []);
 
   async function getExcelCheck() {
     setIsDisabled(true);
@@ -55,8 +78,14 @@ export default function SendCheckPage(props: IProps) {
         dp_bik: bik,
         dp_checkingAccount: checkingAccount,
       });
-      props.navigation.goBack();
+
       setIsDisabled(false);
+
+      await MyLocalStorage.setItem('dp_check_checkingAccount', checkingAccount);
+      await MyLocalStorage.setItem('dp_check_bank', bank);
+      await MyLocalStorage.setItem('dp_check_bik', bik);
+
+      props.navigation.goBack();
     } catch (exception) {
       await AsyncAlertExceptionHelper(exception);
       setIsDisabled(false);
@@ -66,7 +95,7 @@ export default function SendCheckPage(props: IProps) {
   return (
     <AppWrapper>
       <AppContainer>
-        <FormDisabledInput label="ID заказа" value={params.orderId} />
+        {/* <FormDisabledInput label="ID заказа" value={params.orderId} /> */}
         <FormInput
           label="Расчётный счёт"
           placeholder="Введите расчётный счёт"
