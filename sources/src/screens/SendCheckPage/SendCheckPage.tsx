@@ -18,28 +18,33 @@ type IProps = NativeStackScreenProps<RootStackParamList, 'SendCheckPage'>;
 export default function SendCheckPage(props: IProps) {
   const route = useRoute();
   const params: any = route.params;
+  const [isDisabled, setIsDisabled] = useState(false);
   const [checkingAccount, setCheckingAccount] = useState('');
   const [bank, setBank] = useState('');
   const [bik, setBik] = useState('');
 
   async function getExcelCheck() {
+    setIsDisabled(true);
     const title = 'Получение счёт-фактуры';
 
     if (checkingAccount.length === 0) {
       const message = '\nВы не указали расчётный счёт';
       Alert.alert(title, message);
+      setIsDisabled(false);
       return;
     }
 
     if (bank.length === 0) {
       const message = '\nВы не указали банк';
       Alert.alert(title, message);
+      setIsDisabled(false);
       return;
     }
 
     if (bik.length === 0) {
       const message = '\nВы не указали БИК';
       Alert.alert(title, message);
+      setIsDisabled(false);
       return;
     }
 
@@ -51,8 +56,10 @@ export default function SendCheckPage(props: IProps) {
         dp_checkingAccount: checkingAccount,
       });
       props.navigation.goBack();
+      setIsDisabled(false);
     } catch (exception) {
       await AsyncAlertExceptionHelper(exception);
+      setIsDisabled(false);
     }
   }
 
@@ -81,6 +88,7 @@ export default function SendCheckPage(props: IProps) {
         <AppButton
           onPress={getExcelCheck}
           text="Получить excel счёт на почту"
+          disabled={isDisabled}
         />
       </AppContainer>
     </AppWrapper>

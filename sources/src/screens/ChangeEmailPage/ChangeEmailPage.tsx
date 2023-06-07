@@ -14,9 +14,11 @@ type IProps = NativeStackScreenProps<RootStackParamList, 'ChangeEmailPage'>;
 
 export default function ChangeEmailPage(props: IProps) {
   const [newEmail, setNewEmail] = useState('');
+  const [isDisabled, setIsDisabled] = useState(false);
 
-  async function changePassword() {
+  async function changeEmail() {
     try {
+      setIsDisabled(true);
       if (newEmail.length === 0) {
         const title = 'Смена электронной почты';
         const message = 'Вы не ввели электронную почту';
@@ -33,9 +35,11 @@ export default function ChangeEmailPage(props: IProps) {
       message += 'Проверьте свою старую электронную почту. \n';
       Alert.alert(title, message);
 
-      props.navigation.push('AccountPage');
+      setIsDisabled(false);
+      props.navigation.goBack();
     } catch (exception) {
       await AsyncAlertExceptionHelper(exception);
+      setIsDisabled(false);
     }
   }
 
@@ -48,7 +52,11 @@ export default function ChangeEmailPage(props: IProps) {
           value={newEmail}
           setValue={event => setNewEmail(event.nativeEvent.text)}
         />
-        <AppButton onPress={changePassword} text="Сменить e-mail" />
+        <AppButton
+          onPress={changeEmail}
+          text="Сменить e-mail"
+          disabled={isDisabled}
+        />
       </AppContainer>
     </AppWrapper>
   );
